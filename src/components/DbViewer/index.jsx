@@ -49,11 +49,8 @@ export class DbViewer extends Component {
     this.peekTable(selectedTable);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      !CommonUtils.isEmpty(prevProps) &&
-      prevState.selectedTable !== this.state.selectedTable
-    ) {
+  componentDidUpdate(_, prevState) {
+    if (prevState.selectedTable !== this.state.selectedTable) {
       this.peekTable(this.state.selectedTable);
     }
   }
