@@ -2,13 +2,17 @@ import { Component } from 'react';
 
 import MonacoEditor from '@monaco-editor/react';
 import PropTypes from 'prop-types';
+import { Toolbar } from './Toolbar';
 
 export class Editor extends Component {
   render() {
     const { query, setQuery, selectedTable } = this.props;
     return (
       <div style={{ height: '100%' }}>
-        <h3 className="my-2">SQL Editor</h3>
+        <div className="d-flex justify-content-between">
+          <h3 className="my-2">SQL Editor</h3>
+          <Toolbar />
+        </div>
         <MonacoEditor
           height={600}
           defaultLanguage="sql"
