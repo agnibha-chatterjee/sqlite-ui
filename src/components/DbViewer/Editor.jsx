@@ -1,8 +1,8 @@
 import { Component } from 'react';
-
 import MonacoEditor from '@monaco-editor/react';
 import PropTypes from 'prop-types';
 import { Toolbar } from './Toolbar';
+import { CommonUtils } from '../../utils/common';
 
 export class Editor extends Component {
   constructor(props) {
@@ -12,6 +12,14 @@ export class Editor extends Component {
       fontSize: 18,
       wordWrap: 'on'
     };
+
+    this.debouncedSetSelectedQuery = CommonUtils.debounce(selectedQuery => {
+      this.props.setSelectedQuery(selectedQuery);
+    }, 150);
+
+    this.debouncedSetSelectedLine = CommonUtils.debounce(lineContents => {
+      this.props.setSelectedLine(lineContents);
+    }, 150);
   }
 
   setFontSize = fontSize => {
@@ -25,6 +33,20 @@ export class Editor extends Component {
   render() {
     const { query, setQuery, executeQuery } = this.props;
     const { fontSize, wordWrap } = this.state;
+
+    const handleEditorDidMount = editor => {
+      editor.onDidChangeCursorPosition(e => {
+        const selectedText = editor
+          .getModel()
+          .getValueInRange(editor.getSelection());
+
+        const { position: { lineNumber } = {} } = e;
+        const lineText = editor.getModel().getLineContent(lineNumber);
+
+        this.debouncedSetSelectedLine(lineText);
+        this.debouncedSetSelectedQuery(selectedText);
+      });
+    };
 
     return (
       <div style={{ height: '100%' }}>
@@ -43,6 +65,7 @@ export class Editor extends Component {
           height={600}
           defaultLanguage="sql"
           value={query}
+          onMount={handleEditorDidMount}
           onChange={value => setQuery(value)}
           theme="vs-dark"
           options={{
@@ -114,5 +137,7 @@ export class Editor extends Component {
 Editor.propTypes = {
   query: PropTypes.string.isRequired,
   setQuery: PropTypes.func.isRequired,
-  executeQuery: PropTypes.func.isRequired
+  executeQuery: PropTypes.func.isRequired,
+  setSelectedQuery: PropTypes.func.isRequired,
+  setSelectedLine: PropTypes.func.isRequired
 };
