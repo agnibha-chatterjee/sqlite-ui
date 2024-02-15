@@ -1,26 +1,36 @@
 import { Component } from 'react';
 import { toast } from 'react-hot-toast';
+import PropTypes from 'prop-types';
 import { SQLTables } from './SQLTables';
 import { Editor } from './Editor';
 import { QueryResult } from './QueryResult';
 import { QueryError } from './QueryError';
-import { SQLite } from '../../models/SQLite';
+import { PreviousQueries } from './PreviousQueries';
 import { CommonUtils } from '../../utils/common';
+import { QueryHistory } from '../../models/QueryHistory';
+import { SQLite } from '../../models/SQLite';
 
 export class DbViewer extends Component {
   constructor(props) {
     super(props);
 
+    const fileName = props.files[0].name;
+
+    this.queryHistory = new QueryHistory(fileName);
+    this.db = SQLite.getInstance();
+
     this.state = {
       tables: [],
-      query: '',
       queryResult: [],
-      loadingResult: false,
+      query: '',
+      selectedQuery: '',
+      selectedLineText: '',
       selectedTable: '',
-      error: ''
+      queryError: '',
+      queryMessage: '',
+      loadingResult: false,
+      queryHistory: this.queryHistory.getHistory()
     };
-
-    this.db = SQLite.getInstance();
   }
 
   componentDidMount() {
@@ -31,9 +41,14 @@ export class DbViewer extends Component {
       return;
     }
 
-    const initialQuery = `SELECT * FROM ${selectedTable} LIMIT 10`;
+    const initialQuery = `SELECT * FROM ${selectedTable} LIMIT 10;`;
     this.setState({ tables, selectedTable, query: initialQuery });
     this.peekTable(selectedTable);
+    window.scrollTo({
+      behavior: 'smooth',
+      top: document.body.scrollHeight,
+      left: 0
+    });
   }
 
   peekTable = selectedTable => {
@@ -41,24 +56,42 @@ export class DbViewer extends Component {
     this.setQueryResult(result);
   };
 
-  executeQuery = () => {
-    this.setState({ loadingResult: true });
-
-    const { query } = this.state;
-
-    console.log(query);
-    const result = this.db.runQuery(query);
-
+  setQueryResultWrapperAndShowToast = result => {
     this.setQueryResult(result);
 
-    if (result.length && result[0].values.length > 50) {
+    const { data = [] } = result;
+
+    if (data.length && data[0].values.length > 50) {
       toast.error(
-        'This query returned more than 50 rows. Consider adding a limit clause.',
+        'This query returned more than 50 rows. Consider adding a limit.',
         {
           position: 'top-right'
         }
       );
     }
+  };
+
+  executeQuery = () => {
+    this.setState({ loadingResult: true, queryError: '' });
+
+    const { query, selectedQuery, selectedLineText } = this.state;
+
+    const isThereAnyLineText = selectedLineText.trim().length > 0;
+
+    if (isThereAnyLineText) {
+      const result = this.db.runQuery(selectedLineText);
+      if (!result.error) {
+        this.addToQueryHistory(selectedLineText);
+        this.setQueryResultWrapperAndShowToast(result);
+        return;
+      }
+    }
+
+    const isAnyTextSelected = selectedQuery.trim().length > 0;
+    this.addToQueryHistory(isAnyTextSelected ? selectedQuery : query);
+    const result = this.db.runQuery(isAnyTextSelected ? selectedQuery : query);
+
+    this.setQueryResultWrapperAndShowToast(result);
   };
 
   setQuery = query => {
@@ -71,33 +104,111 @@ export class DbViewer extends Component {
   };
 
   setQueryResult = queryResult => {
-    if (CommonUtils.isEmpty(queryResult)) {
-      this.setState({ loadingResult: false });
-    } else if (queryResult.error) {
+    const { message: queryMessage = '', data = [], error = '' } = queryResult;
+
+    const commonState = {
+      loadingResult: false,
+      queryMessage
+    };
+
+    if (error.trim().length) {
       this.setState({
+        ...commonState,
         queryResult: [],
-        loadingResult: false,
-        error: queryResult.error
+        queryError: error
       });
-    } else {
-      this.setState({
-        queryResult,
-        loadingResult: false,
-        error: ''
-      });
+
+      return;
     }
+
+    if (CommonUtils.isEmpty(data) && queryMessage !== 'select') {
+      const { tables: oldTables } = this.state;
+      let newTables = [];
+      if (queryMessage.includes('created table')) {
+        newTables = this.db.getAllTableNames();
+      }
+
+      this.setState({
+        ...commonState,
+        tables: newTables.length ? newTables : oldTables
+      });
+
+      return;
+    }
+
+    if (CommonUtils.isEmpty(data)) {
+      this.setState({ ...commonState, queryResult: [] });
+      return;
+    }
+
+    this.setState({
+      ...commonState,
+      queryResult: data
+    });
   };
 
   setSelectedTable = selectedTable => {
-    const updatedQuery = `SELECT * FROM ${selectedTable} LIMIT 10`;
+    const updatedQuery = `SELECT * FROM ${selectedTable} LIMIT 10;`;
     this.setState({ selectedTable, query: updatedQuery });
   };
 
+  setSelectedQuery = selectedQuery => {
+    this.setState({ selectedQuery });
+  };
+
+  setSelectedLine = selectedLineText => {
+    this.setState({ selectedLineText });
+  };
+
+  addToQueryHistory = query => {
+    this.queryHistory.addQuery(query);
+    this.setState({ queryHistory: this.queryHistory.getHistory() });
+  };
+
+  persistHistory = () => {
+    this.queryHistory.persistHistory();
+    toast.success('Query history persisted to local storage');
+  };
+
+  clearHistory = () => {
+    this.queryHistory.clearHistory();
+    this.setState({ queryHistory: this.queryHistory.getHistory() });
+    toast.error('Query history cleared and persisted storage was purged', {
+      position: 'top-right'
+    });
+  };
+
+  deleteQueryFromHistory = query => {
+    this.queryHistory.deleteQuery(query);
+    this.setState({ queryHistory: this.queryHistory.getHistory() });
+  };
+
   render() {
-    const { tables, query, queryResult, loadingResult, selectedTable, error } =
-      this.state;
+    const {
+      tables,
+      query,
+      queryResult,
+      loadingResult,
+      selectedTable,
+      queryError,
+      queryMessage,
+      queryHistory
+    } = this.state;
     return (
-      <div className="p-2">
+      <div className="d-flex p-5 mt-5">
+        <div
+          className="col-auto p-3 bg-light rounded-2 z-3"
+          style={{ height: 800 }}
+        >
+          <PreviousQueries
+            queryHistory={queryHistory}
+            setQuery={this.setQuery}
+            query={query}
+            persistHistory={this.persistHistory}
+            clearHistory={this.clearHistory}
+            deleteQueryFromHistory={this.deleteQueryFromHistory}
+          />
+        </div>
         <div className="container">
           <div className="row">
             <SQLTables
@@ -112,17 +223,20 @@ export class DbViewer extends Component {
                 query={query}
                 setQuery={this.setQuery}
                 executeQuery={this.executeQuery}
+                setSelectedQuery={this.setSelectedQuery}
+                setSelectedLine={this.setSelectedLine}
               />
             </div>
             <div className="col-6">
-              {queryResult.length && !error ? (
+              {queryError ? (
+                <QueryError error={queryError} />
+              ) : (
                 <QueryResult
                   loadingResult={loadingResult}
                   queryResult={queryResult}
                   setQueryResult={this.setQueryResult}
+                  queryMessage={queryMessage}
                 />
-              ) : (
-                <QueryError error={error} />
               )}
             </div>
           </div>
@@ -131,3 +245,7 @@ export class DbViewer extends Component {
     );
   }
 }
+
+DbViewer.propTypes = {
+  files: PropTypes.array.isRequired
+};

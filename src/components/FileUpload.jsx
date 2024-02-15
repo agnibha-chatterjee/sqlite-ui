@@ -79,7 +79,7 @@ export class FileUpload extends Component {
                   {files.length ? (
                     <span className="fw-bold">{files}</span>
                   ) : (
-                    <span className="fw-bold">No file uploaded</span>
+                    <span className="fw-bold">None</span>
                   )}
                 </p>
               </aside>

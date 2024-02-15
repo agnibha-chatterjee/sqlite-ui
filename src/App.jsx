@@ -1,12 +1,13 @@
 import { Component } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { FileUpload } from './components/FileUpload';
 import { DbViewer } from './components/DbViewer';
 import { SQLite } from './models/SQLite';
-import { Toaster } from 'react-hot-toast';
 
 class App extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       files: [],
       dbLoaded: false
@@ -27,13 +28,15 @@ class App extends Component {
     const { files, dbLoaded } = this.state;
 
     return (
-      <div className="p-3 mb-3 rounded-3">
-        <div className="container py-5">
+      <div className="py-5">
+        <div className="container">
           <h1 className="display-5 fw-bold">SQLite UI</h1>
-          <p className="col-md-8 fs-4">A DB viewer for SQLite databases.</p>
+          <p className="col-md-12 fs-4">A DB viewer for SQLite databases.</p>
+        </div>
+        <div className="container-fluid">
           <div key={JSON.stringify(files)}>
             <FileUpload files={files} onDrop={this.onDrop} />
-            {!!files.length && dbLoaded && <DbViewer />}
+            {!!files.length && dbLoaded && <DbViewer files={files} />}
           </div>
         </div>
         <Toaster />
