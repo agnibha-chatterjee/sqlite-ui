@@ -1,9 +1,12 @@
 import { Component } from 'react';
+import { TableVirtuoso } from 'react-virtuoso';
 import PropTypes from 'prop-types';
+import { TransformUtils } from '../../utils/transform';
 
 export class QueryResult extends Component {
   render() {
-    const { queryResult, loadingResult } = this.props;
+    const { queryResult, loadingResult, queryMessage } = this.props;
+
     const res = queryResult.length
       ? queryResult[0]
       : { columns: [], values: [] };
@@ -16,29 +19,50 @@ export class QueryResult extends Component {
             <div>Fetching results...</div>
           ) : (
             <>
-              {queryResult.length ? (
-                <div className="table-responsive">
-                  <table className="table table-striped table-bordered">
-                    <thead>
-                      <tr>
-                        {res.columns.map(col => (
-                          <th key={col}>{col}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {res.values.map(row => (
-                        <tr key={JSON.stringify(row)}>
-                          {row.map((col, i) => (
-                            <td key={col + i + Math.random()}>{col}</td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+              {queryMessage === 'select' ? (
+                <>
+                  {queryResult.length ? (
+                    <div className="table-responsive">
+                      <TableVirtuoso
+                        style={{ height: 600 }}
+                        data={TransformUtils.transformQueryResult(res)}
+                        totalCount={res.values.length}
+                        components={{
+                          // eslint-disable-next-line react/prop-types
+                          Table: ({ children }) => {
+                            return (
+                              <table className="table table-striped table-hover table-bordered">
+                                {children}
+                              </table>
+                            );
+                          }
+                        }}
+                        fixedHeaderContent={() => (
+                          <tr>
+                            {res.columns.map(col => (
+                              <th key={col + Math.random()}>{col}</th>
+                            ))}
+                          </tr>
+                        )}
+                        itemContent={(index, data) => (
+                          <>
+                            {res.columns.map(col => (
+                              <td key={data[col] + Math.random()}>
+                                {data[col]}
+                              </td>
+                            ))}
+                          </>
+                        )}
+                      />
+                    </div>
+                  ) : (
+                    <div>This table is empty</div>
+                  )}
+                </>
               ) : (
-                <div>No Results</div>
+                <div className="alert alert-success">
+                  <p>{queryMessage}</p>
+                </div>
               )}
             </>
           )}
@@ -50,5 +74,6 @@ export class QueryResult extends Component {
 
 QueryResult.propTypes = {
   queryResult: PropTypes.array.isRequired,
-  loadingResult: PropTypes.bool.isRequired
+  loadingResult: PropTypes.bool.isRequired,
+  queryMessage: PropTypes.string.isRequired
 };

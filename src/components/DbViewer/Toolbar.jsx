@@ -38,12 +38,12 @@ export class Toolbar extends Component {
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            Font size: {fontSize}px
+            Font size: {fontSize}
           </button>
           <ul className="dropdown-menu">
             {this.fontSizes.map(size => (
               <li key={size} onClick={() => setFontSize(size)}>
-                <span className="dropdown-item">{size}px</span>
+                <span className="dropdown-item">{size}</span>
               </li>
             ))}
           </ul>
