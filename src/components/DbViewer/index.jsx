@@ -21,20 +21,6 @@ export class DbViewer extends Component {
     };
 
     this.db = SQLite.getInstance();
-
-    this.debouncedRunQuery = CommonUtils.debounce(query => {
-      const result = this.db.runQuery(query);
-      this.setQueryResult(result);
-
-      if (result.length && result[0].values.length > 50) {
-        toast.error(
-          'This query returned more than 50 rows. Consider adding a limit clause.',
-          {
-            position: 'top-right'
-          }
-        );
-      }
-    }, 1000);
   }
 
   componentDidMount() {
@@ -45,14 +31,9 @@ export class DbViewer extends Component {
       return;
     }
 
-    this.setState({ tables, selectedTable });
+    const initialQuery = `SELECT * FROM ${selectedTable} LIMIT 10`;
+    this.setState({ tables, selectedTable, query: initialQuery });
     this.peekTable(selectedTable);
-  }
-
-  componentDidUpdate(_, prevState) {
-    if (prevState.selectedTable !== this.state.selectedTable) {
-      this.peekTable(this.state.selectedTable);
-    }
   }
 
   peekTable = selectedTable => {
@@ -60,15 +41,33 @@ export class DbViewer extends Component {
     this.setQueryResult(result);
   };
 
+  executeQuery = () => {
+    this.setState({ loadingResult: true });
+
+    const { query } = this.state;
+
+    console.log(query);
+    const result = this.db.runQuery(query);
+
+    this.setQueryResult(result);
+
+    if (result.length && result[0].values.length > 50) {
+      toast.error(
+        'This query returned more than 50 rows. Consider adding a limit clause.',
+        {
+          position: 'top-right'
+        }
+      );
+    }
+  };
+
   setQuery = query => {
     this.setState({
       query,
-      loadingResult: true,
       selectedTable: ''
     });
 
     toast.dismiss();
-    this.debouncedRunQuery(query);
   };
 
   setQueryResult = queryResult => {
@@ -90,7 +89,8 @@ export class DbViewer extends Component {
   };
 
   setSelectedTable = selectedTable => {
-    this.setState({ selectedTable });
+    const updatedQuery = `SELECT * FROM ${selectedTable} LIMIT 10`;
+    this.setState({ selectedTable, query: updatedQuery });
   };
 
   render() {
@@ -110,8 +110,8 @@ export class DbViewer extends Component {
             <div className="col-6">
               <Editor
                 query={query}
-                selectedTable={selectedTable}
                 setQuery={this.setQuery}
+                executeQuery={this.executeQuery}
               />
             </div>
             <div className="col-6">

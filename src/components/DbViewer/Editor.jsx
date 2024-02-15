@@ -5,25 +5,49 @@ import PropTypes from 'prop-types';
 import { Toolbar } from './Toolbar';
 
 export class Editor extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      fontSize: 18,
+      wordWrap: 'on'
+    };
+  }
+
+  setFontSize = fontSize => {
+    this.setState({ fontSize });
+  };
+
+  setWordWrap = wordWrap => {
+    this.setState({ wordWrap });
+  };
+
   render() {
-    const { query, setQuery, selectedTable } = this.props;
+    const { query, setQuery, executeQuery } = this.props;
+    const { fontSize, wordWrap } = this.state;
+
     return (
       <div style={{ height: '100%' }}>
         <div className="d-flex justify-content-between">
           <h3 className="my-2">SQL Editor</h3>
-          <Toolbar />
+          <Toolbar
+            fontSize={fontSize}
+            wordWrap={wordWrap}
+            executeQuery={executeQuery}
+            setQuery={setQuery}
+            setFontSize={this.setFontSize}
+            setWordWrap={this.setWordWrap}
+          />
         </div>
         <MonacoEditor
           height={600}
           defaultLanguage="sql"
-          value={
-            selectedTable ? `SELECT * FROM ${selectedTable} LIMIT 10;` : query
-          }
+          value={query}
           onChange={value => setQuery(value)}
           theme="vs-dark"
           options={{
             minimap: { enabled: false },
-            fontSize: 20,
+            fontSize,
             acceptSuggestionOnCommitCharacter: true,
             acceptSuggestionOnEnter: 'on',
             accessibilitySupport: 'auto',
@@ -73,7 +97,7 @@ export class Editor extends Component {
             suggestOnTriggerCharacters: true,
             wordBasedSuggestions: true,
             wordSeparators: '~!@#$%^&*()-=+[{]}|;:\'",.<>/?',
-            wordWrap: 'on',
+            wordWrap,
             wordWrapBreakAfterCharacters: '\t})]?|&,;',
             wordWrapBreakBeforeCharacters: '{([+',
             wordWrapBreakObtrusiveCharacters: '.',
@@ -89,6 +113,6 @@ export class Editor extends Component {
 
 Editor.propTypes = {
   query: PropTypes.string.isRequired,
-  selectedTable: PropTypes.string.isRequired,
-  setQuery: PropTypes.func.isRequired
+  setQuery: PropTypes.func.isRequired,
+  executeQuery: PropTypes.func.isRequired
 };
