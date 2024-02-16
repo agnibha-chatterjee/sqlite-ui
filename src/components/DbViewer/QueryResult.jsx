@@ -13,7 +13,7 @@ export class QueryResult extends Component {
 
     return (
       <div>
-        <h3 className="my-2">Query Result</h3>
+        <h5 className="my-2">Result</h5>
         <div style={{ overflow: 'scroll', height: 600 }}>
           {loadingResult ? (
             <div>Fetching results...</div>

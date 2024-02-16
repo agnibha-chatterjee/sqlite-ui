@@ -6,7 +6,7 @@ export class QueryError extends Component {
     const { error } = this.props;
     return (
       <div>
-        <h3 className="my-2">Error</h3>
+        <h5 className="my-2">Error</h5>
         <div style={{ height: 600 }}>
           <div className="alert alert-danger">
             <p>Uh-oh! There seems to be an issue with your query</p>

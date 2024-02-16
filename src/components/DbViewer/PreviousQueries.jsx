@@ -16,14 +16,17 @@ export class PreviousQueries extends Component {
       <div className="my-3">
         <div
           className="d-flex justify-content-between align-items-center px-2"
-          style={{ width: 410 }}
+          style={{ width: 360 }}
         >
-          <h3 className="my-2">History</h3>
+          <h5 className="my-2">History</h5>
           <div>
-            <button className="btn btn-secondary mx-2" onClick={persistHistory}>
+            <button
+              className="btn btn-secondary btn-sm mx-2"
+              onClick={persistHistory}
+            >
               Persist History
             </button>
-            <button className="btn btn-danger" onClick={clearHistory}>
+            <button className="btn btn-danger btn-sm" onClick={clearHistory}>
               Clear History
             </button>
           </div>

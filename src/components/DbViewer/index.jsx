@@ -44,11 +44,6 @@ export class DbViewer extends Component {
     const initialQuery = `SELECT * FROM ${selectedTable} LIMIT 10;`;
     this.setState({ tables, selectedTable, query: initialQuery });
     this.peekTable(selectedTable);
-    window.scrollTo({
-      behavior: 'smooth',
-      top: document.body.scrollHeight,
-      left: 0
-    });
   }
 
   peekTable = selectedTable => {
@@ -63,10 +58,7 @@ export class DbViewer extends Component {
 
     if (data.length && data[0].values.length > 50) {
       toast.error(
-        'This query returned more than 50 rows. Consider adding a limit.',
-        {
-          position: 'top-right'
-        }
+        'This query returned more than 50 rows. Consider adding a limit.'
       );
     }
   };
@@ -173,9 +165,7 @@ export class DbViewer extends Component {
   clearHistory = () => {
     this.queryHistory.clearHistory();
     this.setState({ queryHistory: this.queryHistory.getHistory() });
-    toast.error('Query history cleared and persisted storage was purged', {
-      position: 'top-right'
-    });
+    toast.success('Query history cleared and persisted storage was purged');
   };
 
   deleteQueryFromHistory = query => {
@@ -195,11 +185,8 @@ export class DbViewer extends Component {
       queryHistory
     } = this.state;
     return (
-      <div className="d-flex p-5 mt-5">
-        <div
-          className="col-auto p-3 bg-light rounded-2 z-3"
-          style={{ height: 800 }}
-        >
+      <div className="d-flex flex-column flex-lg-row p-1 mt-5">
+        <div className="col-lg-auto bg-light rounded-2 mb-3 mb-lg-0 overflow-auto">
           <PreviousQueries
             queryHistory={queryHistory}
             setQuery={this.setQuery}
@@ -209,35 +196,37 @@ export class DbViewer extends Component {
             deleteQueryFromHistory={this.deleteQueryFromHistory}
           />
         </div>
-        <div className="container">
-          <div className="row">
-            <SQLTables
-              tables={tables}
-              selectedTable={selectedTable}
-              setSelectedTable={this.setSelectedTable}
-            />
-          </div>
-          <div className="row my-4">
-            <div className="col-6">
-              <Editor
-                query={query}
-                setQuery={this.setQuery}
-                executeQuery={this.executeQuery}
-                setSelectedQuery={this.setSelectedQuery}
-                setSelectedLine={this.setSelectedLine}
+        <div className="flex-grow-1 overflow-auto">
+          <div className="container-fluid">
+            <div className="row">
+              <SQLTables
+                tables={tables}
+                selectedTable={selectedTable}
+                setSelectedTable={this.setSelectedTable}
               />
             </div>
-            <div className="col-6">
-              {queryError ? (
-                <QueryError error={queryError} />
-              ) : (
-                <QueryResult
-                  loadingResult={loadingResult}
-                  queryResult={queryResult}
-                  setQueryResult={this.setQueryResult}
-                  queryMessage={queryMessage}
+            <div className="row my-4">
+              <div className="col-md-6">
+                <Editor
+                  query={query}
+                  setQuery={this.setQuery}
+                  executeQuery={this.executeQuery}
+                  setSelectedQuery={this.setSelectedQuery}
+                  setSelectedLine={this.setSelectedLine}
                 />
-              )}
+              </div>
+              <div className="col-md-6">
+                {queryError ? (
+                  <QueryError error={queryError} />
+                ) : (
+                  <QueryResult
+                    loadingResult={loadingResult}
+                    queryResult={queryResult}
+                    setQueryResult={this.setQueryResult}
+                    queryMessage={queryMessage}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -51,7 +51,7 @@ export class Editor extends Component {
     return (
       <div style={{ height: '100%' }}>
         <div className="d-flex justify-content-between">
-          <h3 className="my-2">SQL Editor</h3>
+          <h5 className="my-2">Editor</h5>
           <Toolbar
             fontSize={fontSize}
             wordWrap={wordWrap}
