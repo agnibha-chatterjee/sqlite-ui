@@ -17,10 +17,19 @@ class App extends Component {
   }
 
   onDrop = async files => {
-    const loaded = await this.SQLite.loadDb(files);
+    const loaded = await this.SQLite.loadDbFromFile(files);
 
     this.setState({
       files,
+      dbLoaded: loaded
+    });
+  };
+
+  loadSampleDb = async () => {
+    const loaded = await this.SQLite.loadDbFromUrl('/sample.db');
+
+    this.setState({
+      files: [{ name: 'sample.db' }],
       dbLoaded: loaded
     });
   };
@@ -39,13 +48,21 @@ class App extends Component {
             data-bs-toggle="modal"
             data-bs-target="#tips-modal"
           >
-            Some helpful tips
+            Some helpful tips (recommended if {"you're"} new to SQLite UI)
           </button>
         </div>
         <Tips />
         <div className="container-fluid">
           <div key={JSON.stringify(files)}>
-            <FileUpload files={files} onDrop={this.onDrop} />
+            <div>
+              <FileUpload files={files} onDrop={this.onDrop} />
+              <button
+                className="btn btn-link text-center w-100"
+                onClick={this.loadSampleDb}
+              >
+                Or test the app with a sample sqlite db
+              </button>
+            </div>
             {!!files.length && dbLoaded && <DbViewer files={files} />}
           </div>
         </div>

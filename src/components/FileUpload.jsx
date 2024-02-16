@@ -42,51 +42,53 @@ export class FileUpload extends Component {
     ));
 
     return (
-      <Dropzone
-        onDrop={this.props.onDrop}
-        multiple={false}
-        maxFiles={1}
-        accept={{
-          'application/x-sqlite3': ['.db', '.sqlite', '.sqlite3']
-        }}
-      >
-        {({
-          getRootProps,
-          getInputProps,
-          isFocused,
-          isDragAccept,
-          isDragReject
-        }) => (
-          <section className="container">
-            <div
-              {...getRootProps({
-                style: {
-                  ...this.baseStyle,
-                  ...(isFocused ? this.focusedStyle : {}),
-                  ...(isDragAccept ? this.acceptStyle : {}),
-                  ...(isDragReject ? this.rejectStyle : {})
-                }
-              })}
-            >
-              <input {...getInputProps()} />
-              <p className="mt-3">
-                To get started, drag {"'n'"} drop a sqlite/sqlite3/db file here,
-                or click to select one
-              </p>
-              <aside>
-                <p>
-                  Uploaded File:{' '}
-                  {files.length ? (
-                    <span className="fw-bold">{files}</span>
-                  ) : (
-                    <span className="fw-bold">None</span>
-                  )}
+      <>
+        <Dropzone
+          onDrop={this.props.onDrop}
+          multiple={false}
+          maxFiles={1}
+          accept={{
+            'application/x-sqlite3': ['.db', '.sqlite', '.sqlite3']
+          }}
+        >
+          {({
+            getRootProps,
+            getInputProps,
+            isFocused,
+            isDragAccept,
+            isDragReject
+          }) => (
+            <section className="container">
+              <div
+                {...getRootProps({
+                  style: {
+                    ...this.baseStyle,
+                    ...(isFocused ? this.focusedStyle : {}),
+                    ...(isDragAccept ? this.acceptStyle : {}),
+                    ...(isDragReject ? this.rejectStyle : {})
+                  }
+                })}
+              >
+                <input {...getInputProps()} />
+                <p className="mt-3">
+                  To get started, drag {"'n'"} drop a sqlite/sqlite3/db file
+                  here, or click to select one
                 </p>
-              </aside>
-            </div>
-          </section>
-        )}
-      </Dropzone>
+                <aside>
+                  <p>
+                    Uploaded File:{' '}
+                    {files.length ? (
+                      <span className="fw-bold">{files}</span>
+                    ) : (
+                      <span className="fw-bold">None</span>
+                    )}
+                  </p>
+                </aside>
+              </div>
+            </section>
+          )}
+        </Dropzone>
+      </>
     );
   }
 }

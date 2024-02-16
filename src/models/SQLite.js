@@ -33,13 +33,30 @@ export class SQLite {
     });
   };
 
-  loadDb = async files => {
+  loadFile = async file => {
     try {
-      const file = files[0];
       const buffer = await file.arrayBuffer();
       const uInt8Array = new Uint8Array(buffer);
       this.database = new this.SQL.Database(uInt8Array);
       return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  loadDbFromFile = async files => {
+    try {
+      const file = files[0];
+      return await this.loadFile(file);
+    } catch {
+      return false;
+    }
+  };
+
+  loadDbFromUrl = async url => {
+    try {
+      const file = await fetch(url);
+      return await this.loadFile(file);
     } catch {
       return false;
     }
