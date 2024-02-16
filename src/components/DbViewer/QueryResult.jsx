@@ -56,7 +56,7 @@ export class QueryResult extends Component {
                       />
                     </div>
                   ) : (
-                    <div>This table is empty</div>
+                    <div>This query returned no results</div>
                   )}
                 </>
               ) : (
