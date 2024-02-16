@@ -1,6 +1,6 @@
 import initSqlJs from 'sql.js';
 import SqlString from 'sqlstring';
-import { Parser } from 'node-sql-parser';
+import { QueryParser } from '../utils/query-parser';
 
 export class SQLite {
   static instance;
@@ -8,7 +8,6 @@ export class SQLite {
   constructor() {
     this.database = null;
     this.SQL = null;
-    this.parser = new Parser();
     this.initializeSqlJs();
   }
 
@@ -62,31 +61,11 @@ export class SQLite {
     return allTables.filter(name => !name.startsWith('sqlite_'));
   };
 
-  getMessageForTypeOfQuery = ast => {
-    const { type = '', from = [], table = [], keyword = '' } = ast[0];
-    const dbTable = from[0]?.table ?? table[0]?.table;
-    switch (type) {
-      case 'alter':
-        return `Successfully altered ${dbTable}`;
-      case 'insert':
-        return `Successfully inserted into ${dbTable}`;
-      case 'update':
-        return `Successfully updated ${dbTable}`;
-      case 'delete':
-        return `Successfully deleted row(s) from ${dbTable}`;
-      case 'create':
-        return `Successfully created ${keyword} ${dbTable}`;
-      default:
-        return 'select';
-    }
-  };
-
   runQuery = query => {
     try {
       const formattedQuery = SqlString.format(query);
-      const ast = this.parser.astify(formattedQuery);
       const queryResult = this.db.exec(formattedQuery);
-      const message = this.getMessageForTypeOfQuery(ast);
+      const message = QueryParser.getMessageForTypeOfQuery(formattedQuery);
       return { message, data: queryResult };
     } catch (error) {
       return { error: error.message };
