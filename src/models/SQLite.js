@@ -80,8 +80,7 @@ export class SQLite {
 
   runQuery = query => {
     try {
-      let formattedQuery = SqlString.format(query);
-      formattedQuery += ';';
+      const formattedQuery = SqlString.format(query) + ';';
       const queryResult = this.db.exec(formattedQuery);
       const message = QueryParser.getMessageForTypeOfQuery(formattedQuery);
       return { message, data: queryResult };
