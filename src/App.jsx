@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { FileUpload } from './components/FileUpload';
 import { DbViewer } from './components/DbViewer';
 import { SQLite } from './models/SQLite';
+import { Tips } from './components/Tips';
 
 class App extends Component {
   constructor(props) {
@@ -31,8 +32,17 @@ class App extends Component {
       <div className="py-5">
         <div className="container">
           <h1 className="display-5 fw-bold">SQLite UI</h1>
-          <p className="col-md-12 fs-4">A DB viewer for SQLite databases.</p>
+          <p className="col-12 fs-4">A DB viewer for SQLite databases.</p>
+          <button
+            type="button"
+            className="btn btn-link"
+            data-bs-toggle="modal"
+            data-bs-target="#tips-modal"
+          >
+            Some helpful tips
+          </button>
         </div>
+        <Tips />
         <div className="container-fluid">
           <div key={JSON.stringify(files)}>
             <FileUpload files={files} onDrop={this.onDrop} />
