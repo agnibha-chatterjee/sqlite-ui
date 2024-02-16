@@ -6,7 +6,7 @@ export class SQLTables extends Component {
     const { tables, selectedTable, setSelectedTable } = this.props;
     return (
       <div>
-        <h5 className="my-2">Tables</h5>
+        <h5 className="my-2">Database Tables ({tables.length} in total)</h5>
         <div className="dropdown">
           <button
             type="button"
