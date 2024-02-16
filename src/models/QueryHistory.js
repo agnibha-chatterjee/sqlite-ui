@@ -9,6 +9,7 @@ export class QueryHistory {
   }
 
   addQuery(query) {
+    if (!query) return;
     this.queryHistory.push(query);
   }
 

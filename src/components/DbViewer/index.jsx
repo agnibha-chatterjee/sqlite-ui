@@ -80,7 +80,6 @@ export class DbViewer extends Component {
     }
 
     const isAnyTextSelected = selectedQuery.trim().length > 0;
-    this.addToQueryHistory(isAnyTextSelected ? selectedQuery : query);
     const result = this.db.runQuery(isAnyTextSelected ? selectedQuery : query);
 
     this.setQueryResultWrapperAndShowToast(result);
@@ -96,6 +95,8 @@ export class DbViewer extends Component {
   };
 
   setQueryResult = queryResult => {
+    const { query, selectedQuery } = this.state;
+    const isAnyTextSelected = selectedQuery.trim().length > 0;
     const { message: queryMessage = '', data = [], error = '' } = queryResult;
 
     const commonState = {
@@ -120,6 +121,8 @@ export class DbViewer extends Component {
         newTables = this.db.getAllTableNames();
       }
 
+      this.addToQueryHistory(isAnyTextSelected ? selectedQuery : query);
+
       this.setState({
         ...commonState,
         tables: newTables.length ? newTables : oldTables
@@ -133,6 +136,7 @@ export class DbViewer extends Component {
       return;
     }
 
+    this.addToQueryHistory(isAnyTextSelected ? selectedQuery : query);
     this.setState({
       ...commonState,
       queryResult: data
@@ -140,8 +144,9 @@ export class DbViewer extends Component {
   };
 
   setSelectedTable = selectedTable => {
-    const updatedQuery = `SELECT * FROM ${selectedTable} LIMIT 10;`;
-    this.setState({ selectedTable, query: updatedQuery });
+    const { query } = this.state;
+    const updatedQuery = `\nSELECT * FROM ${selectedTable} LIMIT 10;`;
+    this.setState({ selectedTable, query: query + updatedQuery });
   };
 
   setSelectedQuery = selectedQuery => {
