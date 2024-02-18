@@ -1,14 +1,13 @@
 import { Component } from 'react';
 import { toast } from 'react-hot-toast';
-import PropTypes from 'prop-types';
 import { SQLTables } from './SQLTables';
 import { Editor } from './Editor';
 import { QueryResult } from './QueryResult';
 import { QueryError } from './QueryError';
 import { PreviousQueries } from './PreviousQueries';
 import { CommonUtils } from '../../utils/common';
-import { QueryHistory } from '../../models/QueryHistory';
-import { SQLite } from '../../models/SQLite';
+import { DatabaseManager } from '../../models/DatabaseManager';
+import PropTypes from 'prop-types';
 
 export class DbViewer extends Component {
   constructor(props) {
@@ -16,8 +15,10 @@ export class DbViewer extends Component {
 
     const fileName = props.files[0].name;
 
-    this.queryHistory = new QueryHistory(fileName);
-    this.db = SQLite.getInstance();
+    this.dm = DatabaseManager.getInstance(fileName);
+
+    this.db = this.dm.database();
+    this.queryHistory = this.dm.queryHistory();
 
     this.state = {
       tables: [],
@@ -80,6 +81,7 @@ export class DbViewer extends Component {
     }
 
     const isAnyTextSelected = selectedQuery.trim().length > 0;
+    this.addToQueryHistory(isAnyTextSelected ? selectedQuery : query);
     const result = this.db.runQuery(isAnyTextSelected ? selectedQuery : query);
 
     this.setQueryResultWrapperAndShowToast(result);
@@ -121,8 +123,6 @@ export class DbViewer extends Component {
         newTables = this.db.getAllTableNames();
       }
 
-      this.addToQueryHistory(isAnyTextSelected ? selectedQuery : query);
-
       this.setState({
         ...commonState,
         tables: newTables.length ? newTables : oldTables
@@ -136,7 +136,6 @@ export class DbViewer extends Component {
       return;
     }
 
-    this.addToQueryHistory(isAnyTextSelected ? selectedQuery : query);
     this.setState({
       ...commonState,
       queryResult: data

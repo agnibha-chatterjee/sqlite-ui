@@ -1,4 +1,3 @@
-import toast from 'react-hot-toast';
 import { CommonUtils } from '../utils/common';
 
 export class QueryHistory {

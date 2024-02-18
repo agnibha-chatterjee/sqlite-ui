@@ -2,8 +2,8 @@ import { Component } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { FileUpload } from './components/FileUpload';
 import { DbViewer } from './components/DbViewer';
-import { SQLite } from './models/SQLite';
 import { Tips } from './components/Tips';
+import { DatabaseManager } from './models/DatabaseManager';
 
 class App extends Component {
   constructor(props) {
@@ -13,11 +13,12 @@ class App extends Component {
       files: [],
       dbLoaded: false
     };
-    this.SQLite = SQLite.getInstance();
   }
 
   onDrop = async files => {
-    const loaded = await this.SQLite.loadDbFromFile(files);
+    const fileName = files[0].name;
+    const dm = DatabaseManager.getInstance(fileName);
+    const loaded = await dm.database().loadDbFromFile(files);
 
     this.setState({
       files,
@@ -26,7 +27,9 @@ class App extends Component {
   };
 
   loadSampleDb = async () => {
-    const loaded = await this.SQLite.loadDbFromUrl('/sample.db');
+    const fileName = 'sample.db';
+    const dm = DatabaseManager.getInstance(fileName);
+    const loaded = await dm.database().loadDbFromUrl('/sample.db');
 
     this.setState({
       files: [{ name: 'sample.db' }],
