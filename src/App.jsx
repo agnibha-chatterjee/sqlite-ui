@@ -20,10 +20,15 @@ class App extends Component {
     const dm = DatabaseManager.getInstance(fileName);
     const loaded = await dm.database().loadDbFromFile(files);
 
-    this.setState({
-      files,
-      dbLoaded: loaded
-    });
+    if (loaded) {
+      this.setState({
+        files,
+        dbLoaded: loaded
+      });
+    } else {
+      // retrying
+      this.onDrop(files);
+    }
   };
 
   loadSampleDb = async () => {
@@ -31,15 +36,19 @@ class App extends Component {
     const dm = DatabaseManager.getInstance(fileName);
     const loaded = await dm.database().loadDbFromUrl('/sample.db');
 
-    this.setState({
-      files: [{ name: 'sample.db' }],
-      dbLoaded: loaded
-    });
+    if (loaded) {
+      this.setState({
+        files: [{ name: 'sample.db' }],
+        dbLoaded: loaded
+      });
+    } else {
+      //retrying
+      this.loadSampleDb();
+    }
   };
 
   render() {
     const { files, dbLoaded } = this.state;
-
     return (
       <div className="py-5">
         <div className="container">
