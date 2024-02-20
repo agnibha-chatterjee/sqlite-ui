@@ -97,8 +97,6 @@ export class DbViewer extends Component {
   };
 
   setQueryResult = queryResult => {
-    const { query, selectedQuery } = this.state;
-    const isAnyTextSelected = selectedQuery.trim().length > 0;
     const { message: queryMessage = '', data = [], error = '' } = queryResult;
 
     const commonState = {
