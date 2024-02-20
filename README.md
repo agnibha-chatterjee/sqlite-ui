@@ -21,6 +21,12 @@ SQLite UI is a web application designed to provide a user-friendly interface for
 - Secure File Upload: As this is a purely frontend application, your data never leaves the browser.
 - User-Friendly Design: Designed to be user-friendly, catering to users with varying levels of technical expertise and SQL knowledge.
 
+## Design Decisions
+
+- The app in it's current state allows for viewing only one database, so the class responsible for loading the database (SQLite) is a singleton class.
+- The DatabaseManager is a layer of abstraction that sits on top of the SQLite and QueryHistory classes exposing their functionality through instances of each, respectively.
+- The only model class to be imported and used by other classes is DatabaseManager.
+
 ## Getting Started
 
 To test SQLite UI locally, follow these steps:
