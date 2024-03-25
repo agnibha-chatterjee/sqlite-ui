@@ -1,9 +1,8 @@
-import { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
 
-export class FileUpload extends Component {
-  baseStyle = {
+export const FileUpload = ({ files, onDrop }) => {
+  const baseStyle = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
@@ -20,80 +19,75 @@ export class FileUpload extends Component {
     width: '100%'
   };
 
-  focusedStyle = {
+  const focusedStyle = {
     borderColor: '#2196f3'
   };
 
-  acceptStyle = {
+  const acceptStyle = {
     borderColor: '#00e676'
   };
 
-  rejectStyle = {
+  const rejectStyle = {
     borderColor: '#ff1744'
   };
 
-  constructor(props) {
-    super(props);
-  }
+  const fileList = files.map(file => (
+    <span key={file.name}>{file.name}</span>
+  ));
 
-  render() {
-    const files = this.props.files.map(file => (
-      <span key={file.name}>{file.name}</span>
-    ));
-
-    return (
-      <>
-        <Dropzone
-          onDrop={this.props.onDrop}
-          multiple={false}
-          maxFiles={1}
-          accept={{
-            'application/x-sqlite3': ['.db', '.sqlite', '.sqlite3']
-          }}
-        >
-          {({
-            getRootProps,
-            getInputProps,
-            isFocused,
-            isDragAccept,
-            isDragReject
-          }) => (
-            <section className="container">
-              <div
-                {...getRootProps({
-                  style: {
-                    ...this.baseStyle,
-                    ...(isFocused ? this.focusedStyle : {}),
-                    ...(isDragAccept ? this.acceptStyle : {}),
-                    ...(isDragReject ? this.rejectStyle : {})
-                  }
-                })}
-              >
-                <input {...getInputProps()} />
-                <p className="mt-3">
-                  To get started, drag {"'n'"} drop a sqlite/sqlite3/db file
-                  here, or click to select one
+  return (
+    <>
+      <Dropzone
+        onDrop={onDrop}
+        multiple={false}
+        maxFiles={1}
+        accept={{
+          'application/x-sqlite3': ['.db', '.sqlite', '.sqlite3']
+        }}
+      >
+        {({
+          getRootProps,
+          getInputProps,
+          isFocused,
+          isDragAccept,
+          isDragReject
+        }) => (
+          <section className="container">
+            <div
+              {...getRootProps({
+                style: {
+                  ...baseStyle,
+                  ...(isFocused ? focusedStyle : {}),
+                  ...(isDragAccept ? acceptStyle : {}),
+                  ...(isDragReject ? rejectStyle : {})
+                }
+              })}
+            >
+              <input {...getInputProps()} />
+              <p className="mt-3">
+                To get started, drag {"'n'"} drop a sqlite/sqlite3/db file
+                here, or click to select one
+              </p>
+              <aside>
+                <p>
+                  Uploaded File:{' '}
+                  {fileList.length ? (
+                    <span className="fw-bold">{fileList}</span>
+                  ) : (
+                    <span className="fw-bold">None</span>
+                  )}
                 </p>
-                <aside>
-                  <p>
-                    Uploaded File:{' '}
-                    {files.length ? (
-                      <span className="fw-bold">{files}</span>
-                    ) : (
-                      <span className="fw-bold">None</span>
-                    )}
-                  </p>
-                </aside>
-              </div>
-            </section>
-          )}
-        </Dropzone>
-      </>
-    );
-  }
-}
+              </aside>
+            </div>
+          </section>
+        )}
+      </Dropzone>
+    </>
+  );
+};
 
 FileUpload.propTypes = {
   files: PropTypes.array.isRequired,
   onDrop: PropTypes.func.isRequired
 };
+

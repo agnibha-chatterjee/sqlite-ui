@@ -1,6 +1,6 @@
 import initSqlJs from 'sql.js';
 import SqlString from 'sqlstring';
-import { QueryParser } from '../utils/query-parser';
+import { getMessageForTypeOfQuery } from '../utils/query-parser';
 
 export class SQLite {
   static instance;
@@ -82,7 +82,7 @@ export class SQLite {
     try {
       const formattedQuery = SqlString.format(query) + ';';
       const queryResult = this.db.exec(formattedQuery);
-      const message = QueryParser.getMessageForTypeOfQuery(formattedQuery);
+      const message = getMessageForTypeOfQuery(formattedQuery);
       return { message, data: queryResult };
     } catch (error) {
       return { error: error.message };

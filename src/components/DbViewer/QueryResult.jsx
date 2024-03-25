@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { TableVirtuoso } from 'react-virtuoso';
 import PropTypes from 'prop-types';
-import { TransformUtils } from '../../utils/transform';
+import { transformQueryResult } from '../../utils/transform';
 
 export class QueryResult extends Component {
   render() {
@@ -25,7 +25,7 @@ export class QueryResult extends Component {
                     <div className="table-responsive">
                       <TableVirtuoso
                         style={{ height: 600 }}
-                        data={TransformUtils.transformQueryResult(res)}
+                        data={transformQueryResult(res)}
                         totalCount={res.values.length}
                         components={{
                           // eslint-disable-next-line react/prop-types

@@ -5,7 +5,7 @@ import { Editor } from './Editor';
 import { QueryResult } from './QueryResult';
 import { QueryError } from './QueryError';
 import { PreviousQueries } from './PreviousQueries';
-import { CommonUtils } from '../../utils/common';
+import { isEmpty } from '../../utils/common';
 import { DatabaseManager } from '../../models/DatabaseManager';
 import PropTypes from 'prop-types';
 
@@ -114,7 +114,7 @@ export class DbViewer extends Component {
       return;
     }
 
-    if (CommonUtils.isEmpty(data) && queryMessage !== 'select') {
+    if (isEmpty(data) && queryMessage !== 'select') {
       const { tables: oldTables } = this.state;
       let newTables = [];
       if (queryMessage.includes('created table')) {
@@ -129,7 +129,7 @@ export class DbViewer extends Component {
       return;
     }
 
-    if (CommonUtils.isEmpty(data)) {
+    if (isEmpty(data)) {
       this.setState({ ...commonState, queryResult: [] });
       return;
     }

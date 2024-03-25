@@ -1,4 +1,4 @@
-import { CommonUtils } from '../utils/common';
+import { isEmpty } from '../utils/common';
 
 export class QueryHistory {
   constructor(dbName) {
@@ -42,7 +42,7 @@ export class QueryHistory {
       console.error('Error retrieving stored queries', error);
     }
 
-    if (!!localStorageObject && !CommonUtils.isEmpty(localStorageObject)) {
+    if (!!localStorageObject && !isEmpty(localStorageObject)) {
       this.queryHistory = localStorageObject[localStorageKey];
     }
   }

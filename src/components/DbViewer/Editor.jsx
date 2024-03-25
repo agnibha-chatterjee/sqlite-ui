@@ -2,7 +2,7 @@ import { Component } from 'react';
 import MonacoEditor from '@monaco-editor/react';
 import PropTypes from 'prop-types';
 import { Toolbar } from './Toolbar';
-import { CommonUtils } from '../../utils/common';
+import { debounce } from '../../utils/common';
 
 export class Editor extends Component {
   constructor(props) {
@@ -13,11 +13,11 @@ export class Editor extends Component {
       wordWrap: 'on'
     };
 
-    this.debouncedSetSelectedQuery = CommonUtils.debounce(selectedQuery => {
+    this.debouncedSetSelectedQuery = debounce(selectedQuery => {
       this.props.setSelectedQuery(selectedQuery);
     }, 150);
 
-    this.debouncedSetSelectedLine = CommonUtils.debounce(lineContents => {
+    this.debouncedSetSelectedLine = debounce(lineContents => {
       this.props.setSelectedLine(lineContents);
     }, 150);
   }
