@@ -4,7 +4,7 @@ A simple GUI tool for SQLite databases.
 
 ## Updates
 
-Many portions of the app was re-written to follow a more functional style of programming, the app now uses functional React components instead of class-based components.
+Many portions of the app were re-written to follow a more functional style of programming, the app now uses functional React components instead of class-based components.
 
 ## Design Document
 
