@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { Toaster } from "react-hot-toast";
 import { FileUpload } from "./components/FileUpload";
 import { DbViewer } from "./components/DbViewer";
 import { Tips } from "./components/Tips";
@@ -66,7 +65,6 @@ const App = () => {
           {!!files.length && dbLoaded && <DbViewer files={files} />}
         </div>
       </div>
-      <Toaster />
     </div>
   );
 };

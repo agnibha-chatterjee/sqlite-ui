@@ -24,10 +24,8 @@ export const QueryHistory = (dbName) => {
 
   function persistHistory() {
     const localStorageKey = `queryHistory-${dbName}`;
-    const localStorageObject = {};
-    localStorageObject[localStorageKey] = queryHistory;
-
-    localStorage.setItem(localStorageKey, JSON.stringify(localStorageObject));
+    console.log(queryHistory);
+    localStorage.setItem(localStorageKey, JSON.stringify(queryHistory));
   }
 
   function loadHistory() {

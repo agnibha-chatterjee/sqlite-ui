@@ -1,6 +1,11 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
-export const SQLTables = ({ tables, selectedTable, setSelectedTable }) => {
+export const SQLTables = ({
+  tables,
+  selectedTable,
+  setSelectedTable,
+  initialRender,
+}) => {
   return (
     <div>
       <h5 className="my-2">Database Tables ({tables.length} in total)</h5>
@@ -14,15 +19,18 @@ export const SQLTables = ({ tables, selectedTable, setSelectedTable }) => {
           Selected table: {selectedTable}
         </button>
         <ul className="dropdown-menu w-100">
-          {tables.map(table => (
+          {tables.map((table) => (
             <li
               key={table}
-              onClick={() => setSelectedTable(table)}
+              onClick={() => {
+                setSelectedTable(table);
+                initialRender.current++;
+              }}
               className="w-100"
             >
               <span
                 className={`dropdown-item ${
-                  selectedTable === table && 'bg-dark text-light'
+                  selectedTable === table && "bg-dark text-light"
                 }`}
               >
                 {table}
@@ -38,6 +46,6 @@ export const SQLTables = ({ tables, selectedTable, setSelectedTable }) => {
 SQLTables.propTypes = {
   tables: PropTypes.array.isRequired,
   selectedTable: PropTypes.string.isRequired,
-  setSelectedTable: PropTypes.func.isRequired
+  setSelectedTable: PropTypes.func.isRequired,
+  initialRender: PropTypes.object.isRequired,
 };
-

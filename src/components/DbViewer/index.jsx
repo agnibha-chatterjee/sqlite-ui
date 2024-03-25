@@ -1,4 +1,4 @@
-import { toast } from "react-hot-toast";
+import { useState, useEffect } from "react";
 import { SQLTables } from "./SQLTables";
 import { Editor } from "./Editor";
 import { QueryResult } from "./QueryResult";
@@ -7,15 +7,14 @@ import { PreviousQueries } from "./PreviousQueries";
 import { isEmpty } from "../../utils/common";
 import { DatabaseManager } from "../../models/DatabaseManager";
 import PropTypes from "prop-types";
-import { useState, useEffect } from "react";
+import { useRef } from "react";
 
 export const DbViewer = ({ files }) => {
   const fileName = files[0].name;
+
   const dm = DatabaseManager(fileName);
 
   const db = dm.database();
-  const queryHistory = dm.queryHistory();
-
   const [tables, setTables] = useState([]);
   const [queryResult, setQueryResult] = useState([]);
   const [query, setQuery] = useState("");
@@ -25,9 +24,12 @@ export const DbViewer = ({ files }) => {
   const [queryError, setQueryError] = useState("");
   const [queryMessage, setQueryMessage] = useState("");
   const [loadingResult, setLoadingResult] = useState(false);
-  const [queryHistoryState, setQueryHistoryState] = useState(
-    queryHistory.getHistory()
-  );
+  const [queryHistory, setQueryHistory] = useState(() => {
+    const localStorageKey = `queryHistory-${fileName}`;
+    const history = localStorage.getItem(localStorageKey);
+    return history ? JSON.parse(history) : [];
+  });
+  const initialRender = useRef(0);
 
   useEffect(() => {
     const tables = db.getAllTableNames();
@@ -42,7 +44,17 @@ export const DbViewer = ({ files }) => {
     setSelectedTable(selectedTable);
     setQuery(initialQuery);
     peekTable(selectedTable);
+
+    initialRender.current++;
   }, []);
+
+  useEffect(() => {
+    if (initialRender.current <= 2) {
+      return;
+    }
+    const updatedQuery = `\nSELECT * FROM ${selectedTable} LIMIT 10;`;
+    setQuery((prevQuery) => prevQuery + updatedQuery.trim());
+  }, [selectedTable]);
 
   const peekTable = (selectedTable) => {
     const result = db.peekTable(selectedTable);
@@ -107,35 +119,40 @@ export const DbViewer = ({ files }) => {
   };
 
   const addToQueryHistory = (query) => {
-    queryHistory.addQuery(query);
-    setQueryHistoryState(queryHistory.getHistory());
+    setQueryHistory((prevHistory) => {
+      const newHistory = [...new Set([query, ...prevHistory])];
+      persistHistory(newHistory);
+      return newHistory;
+    });
   };
 
-  const persistHistory = () => {
-    queryHistory.persistHistory();
-    toast.success("Query history persisted to local storage");
+  const persistHistory = (history) => {
+    const localStorageKey = `queryHistory-${fileName}`;
+    localStorage.setItem(localStorageKey, JSON.stringify(history));
   };
 
   const clearHistory = () => {
-    queryHistory.clearHistory();
-    setQueryHistoryState(queryHistory.getHistory());
-    toast.success("Query history cleared and persisted storage was purged");
+    setQueryHistory([]);
+    persistHistory([]);
   };
 
   const deleteQueryFromHistory = (query) => {
-    queryHistory.deleteQuery(query);
-    setQueryHistoryState(queryHistory.getHistory());
+    setQueryHistory((prevHistory) => {
+      const newHistory = prevHistory.filter((q) => q !== query);
+      persistHistory(newHistory);
+      return newHistory;
+    });
   };
 
   return (
     <div className="d-flex flex-column flex-lg-row p-1 mt-5">
       <div className="col-lg-auto bg-light rounded-2 mb-3 mb-lg-0 overflow-auto">
         <PreviousQueries
-          queryHistory={queryHistoryState}
+          queryHistory={queryHistory}
           setQuery={setQuery}
           query={query}
-          persistHistory={persistHistory}
           clearHistory={clearHistory}
+          deleteQuery
           deleteQueryFromHistory={deleteQueryFromHistory}
         />
       </div>
@@ -146,6 +163,7 @@ export const DbViewer = ({ files }) => {
               tables={tables}
               selectedTable={selectedTable}
               setSelectedTable={setSelectedTable}
+              initialRender={initialRender}
             />
           </div>
           <div className="row my-4">
