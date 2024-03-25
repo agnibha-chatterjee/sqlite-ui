@@ -1,17 +1,25 @@
-import { useState, useCallback } from "react";
+import { useRef, useState } from "react";
 import { FileUpload } from "./components/FileUpload";
 import { DbViewer } from "./components/DbViewer";
 import { Tips } from "./components/Tips";
 import { DatabaseManager } from "./models/DatabaseManager";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const [files, setFiles] = useState([]);
   const [dbLoaded, setDbLoaded] = useState(false);
 
-  const onDrop = useCallback(async (files) => {
+  const databaseManagerRef = useRef(null);
+
+  const onDrop = async (files) => {
     const fileName = files[0].name;
     const dm = DatabaseManager(fileName);
-    const loaded = await dm.database().loadDbFromFile(files);
+    const database = await dm.database();
+    databaseManagerRef.current = {
+      db: database,
+      ...dm,
+    };
+    const loaded = await database.loadDbFromFile(files);
 
     if (loaded) {
       setFiles(files);
@@ -20,12 +28,18 @@ const App = () => {
       // retrying
       onDrop(files);
     }
-  }, []);
+  };
 
-  const loadSampleDb = useCallback(async () => {
+  const loadSampleDb = async () => {
     const fileName = "sample.db";
     const dm = DatabaseManager(fileName);
-    const loaded = await dm.database().loadDbFromUrl("/sample.db");
+    databaseManagerRef.current = dm;
+    const database = await dm.database();
+    databaseManagerRef.current = {
+      db: database,
+      ...dm,
+    };
+    const loaded = await database.loadDbFromUrl("/sample.db");
 
     if (loaded) {
       setFiles([{ name: "sample.db" }]);
@@ -34,10 +48,11 @@ const App = () => {
       //retrying
       loadSampleDb();
     }
-  }, []);
+  };
 
   return (
     <div className="py-5">
+      <Toaster />
       <div className="container">
         <h1 className="display-5 fw-bold">SQLite UI</h1>
         <p className="col-12 fs-4">A DB viewer for SQLite databases.</p>
@@ -62,7 +77,12 @@ const App = () => {
               Or test the app with a sample sqlite db
             </button>
           </div>
-          {!!files.length && dbLoaded && <DbViewer files={files} />}
+          {!!files.length && dbLoaded && (
+            <DbViewer
+              files={files}
+              databaseManager={databaseManagerRef.current}
+            />
+          )}
         </div>
       </div>
     </div>

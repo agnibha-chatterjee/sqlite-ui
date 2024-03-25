@@ -1,23 +1,30 @@
-import { useState } from 'react';
-import MonacoEditor from '@monaco-editor/react';
-import PropTypes from 'prop-types';
-import { Toolbar } from './Toolbar';
-import { debounce } from '../../utils/common';
+import { useState } from "react";
+import MonacoEditor from "@monaco-editor/react";
+import PropTypes from "prop-types";
+import { Toolbar } from "./Toolbar";
+import { debounce } from "../../utils/common";
 
-export const Editor = ({ query, setQuery, executeQuery, setSelectedQuery, setSelectedLine }) => {
+export const Editor = ({
+  query,
+  setQuery,
+  executeQuery,
+  setSelectedQuery,
+  setSelectedLine,
+}) => {
   const [fontSize, setFontSize] = useState(18);
-  const [wordWrap, setWordWrap] = useState('on');
+  const [wordWrap, setWordWrap] = useState("on");
 
-  const debouncedSetSelectedQuery = debounce(selectedQuery => {
+  const debouncedSetSelectedQuery = debounce((selectedQuery) => {
     setSelectedQuery(selectedQuery);
   }, 150);
 
-  const debouncedSetSelectedLine = debounce(lineContents => {
+  const debouncedSetSelectedLine = debounce((lineContents) => {
     setSelectedLine(lineContents);
   }, 150);
 
-  const handleEditorDidMount = editor => {
-    editor.onDidChangeCursorPosition(e => {
+  const handleEditorDidMount = (editor) => {
+    console.log(" I RAN");
+    editor.onDidChangeCursorPosition((e) => {
       const selectedText = editor
         .getModel()
         .getValueInRange(editor.getSelection());
@@ -31,7 +38,7 @@ export const Editor = ({ query, setQuery, executeQuery, setSelectedQuery, setSel
   };
 
   return (
-    <div style={{ height: '100%' }}>
+    <div style={{ height: "100%" }}>
       <div className="d-flex justify-content-between">
         <h5 className="my-2">Editor</h5>
         <Toolbar
@@ -48,28 +55,28 @@ export const Editor = ({ query, setQuery, executeQuery, setSelectedQuery, setSel
         defaultLanguage="sql"
         value={query}
         onMount={handleEditorDidMount}
-        onChange={value => setQuery(value)}
+        onChange={(value) => setQuery(value)}
         theme="vs-dark"
         options={{
           minimap: { enabled: false },
           fontSize,
           acceptSuggestionOnCommitCharacter: true,
-          acceptSuggestionOnEnter: 'on',
-          accessibilitySupport: 'auto',
+          acceptSuggestionOnEnter: "on",
+          accessibilitySupport: "auto",
           autoIndent: false,
           automaticLayout: true,
           codeLens: true,
           colorDecorators: true,
           contextmenu: true,
-          cursorBlinking: 'blink',
+          cursorBlinking: "blink",
           cursorSmoothCaretAnimation: false,
-          cursorStyle: 'line',
+          cursorStyle: "line",
           disableLayerHinting: false,
           disableMonospaceOptimizations: false,
           dragAndDrop: false,
           fixedOverflowWidgets: false,
           folding: true,
-          foldingStrategy: 'auto',
+          foldingStrategy: "auto",
           fontLigatures: false,
           formatOnPaste: false,
           formatOnType: false,
@@ -78,7 +85,7 @@ export const Editor = ({ query, setQuery, executeQuery, setSelectedQuery, setSel
           links: true,
           mouseWheelZoom: false,
           multiCursorMergeOverlapping: true,
-          multiCursorModifier: 'alt',
+          multiCursorModifier: "alt",
           overviewRulerBorder: true,
           overviewRulerLanes: 2,
           quickSuggestions: true,
@@ -87,8 +94,8 @@ export const Editor = ({ query, setQuery, executeQuery, setSelectedQuery, setSel
           renderControlCharacters: false,
           renderFinalNewline: true,
           renderIndentGuides: true,
-          renderLineHighlight: 'all',
-          renderWhitespace: 'none',
+          renderLineHighlight: "all",
+          renderWhitespace: "none",
           revealHorizontalRightPadding: 30,
           roundedSelection: true,
           rulers: [],
@@ -97,18 +104,18 @@ export const Editor = ({ query, setQuery, executeQuery, setSelectedQuery, setSel
           selectOnLineNumbers: true,
           selectionClipboard: true,
           selectionHighlight: true,
-          showFoldingControls: 'mouseover',
+          showFoldingControls: "mouseover",
           smoothScrolling: false,
           suggestOnTriggerCharacters: true,
           wordBasedSuggestions: true,
-          wordSeparators: '~!@#$%^&*()-=+[{]}|;:\'",.<>/?',
+          wordSeparators: "~!@#$%^&*()-=+[{]}|;:'\",.<>/?",
           wordWrap,
-          wordWrapBreakAfterCharacters: '\t})]?|&,;',
-          wordWrapBreakBeforeCharacters: '{([+',
-          wordWrapBreakObtrusiveCharacters: '.',
+          wordWrapBreakAfterCharacters: "\t})]?|&,;",
+          wordWrapBreakBeforeCharacters: "{([+",
+          wordWrapBreakObtrusiveCharacters: ".",
           wordWrapColumn: 80,
           wordWrapMinified: true,
-          wrappingIndent: 'none'
+          wrappingIndent: "none",
         }}
       />
     </div>
@@ -120,5 +127,5 @@ Editor.propTypes = {
   setQuery: PropTypes.func.isRequired,
   executeQuery: PropTypes.func.isRequired,
   setSelectedQuery: PropTypes.func.isRequired,
-  setSelectedLine: PropTypes.func.isRequired
+  setSelectedLine: PropTypes.func.isRequired,
 };

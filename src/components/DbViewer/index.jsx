@@ -5,16 +5,35 @@ import { QueryResult } from "./QueryResult";
 import { QueryError } from "./QueryError";
 import { PreviousQueries } from "./PreviousQueries";
 import { isEmpty } from "../../utils/common";
-import { DatabaseManager } from "../../models/DatabaseManager";
 import PropTypes from "prop-types";
 import { useRef } from "react";
+import toast from "react-hot-toast";
 
-export const DbViewer = ({ files }) => {
+export const DbViewer = ({ files, databaseManager }) => {
   const fileName = files[0].name;
 
-  const dm = DatabaseManager(fileName);
+  const DatabaseManager = databaseManager;
 
-  const db = dm.database();
+  const db = DatabaseManager.db;
+  const qh = DatabaseManager.queryHistory();
+
+  const getParsedLocalHistory = () => {
+    const items = qh.getHistory();
+
+    if (!items.length) {
+      const key = `queryHistory-${fileName}`;
+      const localStorageObject = localStorage.getItem(key);
+      if (localStorageObject) {
+        return JSON.parse(localStorageObject);
+      }
+
+      return [];
+    }
+
+    return items;
+  };
+
+  const [loaded, setIsLoaded] = useState(false);
   const [tables, setTables] = useState([]);
   const [queryResult, setQueryResult] = useState([]);
   const [query, setQuery] = useState("");
@@ -24,12 +43,17 @@ export const DbViewer = ({ files }) => {
   const [queryError, setQueryError] = useState("");
   const [queryMessage, setQueryMessage] = useState("");
   const [loadingResult, setLoadingResult] = useState(false);
-  const [queryHistory, setQueryHistory] = useState(() => {
-    const localStorageKey = `queryHistory-${fileName}`;
-    const history = localStorage.getItem(localStorageKey);
-    return history ? JSON.parse(history) : [];
-  });
+  const [queryHistory, setQueryHistory] = useState(getParsedLocalHistory());
   const initialRender = useRef(0);
+
+  console.log("Line", selectedLineText);
+  console.log("selected", selectedQuery);
+
+  useEffect(() => {
+    if (!isEmpty(db)) {
+      setIsLoaded(true);
+    }
+  }, []);
 
   useEffect(() => {
     const tables = db.getAllTableNames();
@@ -53,7 +77,7 @@ export const DbViewer = ({ files }) => {
       return;
     }
     const updatedQuery = `\nSELECT * FROM ${selectedTable} LIMIT 10;`;
-    setQuery((prevQuery) => prevQuery + updatedQuery.trim());
+    setQuery((prevQuery) => prevQuery + updatedQuery);
   }, [selectedTable]);
 
   const peekTable = (selectedTable) => {
@@ -113,38 +137,40 @@ export const DbViewer = ({ files }) => {
 
     const isAnyTextSelected = selectedQuery.trim().length > 0;
     addToQueryHistory(isAnyTextSelected ? selectedQuery : query);
+    console.log(db);
     const result = db.runQuery(isAnyTextSelected ? selectedQuery : query);
-
+    console.log(result);
     setQueryResultHandler(result);
   };
 
   const addToQueryHistory = (query) => {
     setQueryHistory((prevHistory) => {
       const newHistory = [...new Set([query, ...prevHistory])];
-      persistHistory(newHistory);
       return newHistory;
     });
   };
 
-  const persistHistory = (history) => {
+  const persistHistory = () => {
     const localStorageKey = `queryHistory-${fileName}`;
-    localStorage.setItem(localStorageKey, JSON.stringify(history));
+    localStorage.setItem(localStorageKey, JSON.stringify(queryHistory));
+    toast.success("Query history persisted to local storage");
   };
 
   const clearHistory = () => {
     setQueryHistory([]);
-    persistHistory([]);
+    const localStorageKey = `queryHistory-${fileName}`;
+    localStorage.clear(localStorageKey);
+    toast.success("Query history cleared and persisted storage was purged");
   };
 
   const deleteQueryFromHistory = (query) => {
     setQueryHistory((prevHistory) => {
       const newHistory = prevHistory.filter((q) => q !== query);
-      persistHistory(newHistory);
       return newHistory;
     });
   };
 
-  return (
+  return loaded ? (
     <div className="d-flex flex-column flex-lg-row p-1 mt-5">
       <div className="col-lg-auto bg-light rounded-2 mb-3 mb-lg-0 overflow-auto">
         <PreviousQueries
@@ -192,9 +218,12 @@ export const DbViewer = ({ files }) => {
         </div>
       </div>
     </div>
+  ) : (
+    <div>Error parsing database file</div>
   );
 };
 
 DbViewer.propTypes = {
   files: PropTypes.array.isRequired,
+  databaseManager: PropTypes.object.isRequired,
 };

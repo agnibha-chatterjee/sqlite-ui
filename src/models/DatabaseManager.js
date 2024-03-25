@@ -12,9 +12,9 @@ export const DatabaseManager = (fileName) => {
 
   const self = {
     queryHistory: () => qh,
-    database: () => {
-      getDb();
-      return db;
+    database: async () => {
+      const temp = await getDb();
+      return temp;
     },
   };
 
