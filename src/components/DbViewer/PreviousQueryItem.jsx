@@ -1,6 +1,11 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
-export const PreviousQueryItem = ({ query, setQuery, editorContents, deleteQueryFromHistory }) => {
+export const PreviousQueryItem = ({
+  query,
+  setQuery,
+  editorContents,
+  deleteQueryFromHistory,
+}) => {
   return (
     <div className="card my-2 ms-1" style={{ maxWidth: 340 }}>
       <div className="card-body">
@@ -26,5 +31,5 @@ PreviousQueryItem.propTypes = {
   query: PropTypes.string.isRequired,
   setQuery: PropTypes.func.isRequired,
   editorContents: PropTypes.string.isRequired,
-  deleteQueryFromHistory: PropTypes.func.isRequired
+  deleteQueryFromHistory: PropTypes.func.isRequired,
 };

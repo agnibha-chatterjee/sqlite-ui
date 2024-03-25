@@ -154,6 +154,7 @@ export const DbViewer = ({ files }) => {
           clearHistory={clearHistory}
           deleteQuery
           deleteQueryFromHistory={deleteQueryFromHistory}
+          persistHistory={persistHistory}
         />
       </div>
       <div className="flex-grow-1 overflow-auto">

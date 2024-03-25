@@ -7,6 +7,7 @@ export const PreviousQueries = ({
   query: editorContents,
   clearHistory,
   deleteQueryFromHistory,
+  persistHistory,
 }) => {
   return (
     <div className="my-3">
@@ -16,6 +17,12 @@ export const PreviousQueries = ({
       >
         <h5 className="my-2">History</h5>
         <div>
+          <button
+            className="btn btn-secondary btn-sm mx-2"
+            onClick={persistHistory}
+          >
+            Persist History
+          </button>
           <button className="btn btn-danger btn-sm" onClick={clearHistory}>
             Clear History
           </button>
@@ -42,4 +49,5 @@ PreviousQueries.propTypes = {
   query: PropTypes.string.isRequired,
   clearHistory: PropTypes.func.isRequired,
   deleteQueryFromHistory: PropTypes.func.isRequired,
+  persistHistory: PropTypes.func.isRequired,
 };

@@ -2,6 +2,10 @@
 
 A simple GUI tool for SQLite databases.
 
+## Updates
+
+Many portions of the app was re-written to follow a more functional style of programming, the app now uses functional React components instead of class-based components.
+
 ## Design Document
 
 [Link to document](https://docs.google.com/document/d/1RKbaiCt2x4ijkt0R4R44YsqSmyY2WY0hJYDRh6K7rKI/edit?usp=sharing)
@@ -21,12 +25,6 @@ SQLite UI is a web application designed to provide a user-friendly interface for
 - Secure File Upload: As this is a purely frontend application, your data never leaves the browser.
 - User-Friendly Design: Designed to be user-friendly, catering to users with varying levels of technical expertise and SQL knowledge.
 
-## Design Decisions
-
-- The app in it's current state allows for viewing only one database, so the class responsible for loading the database (SQLite) is a singleton class.
-- The DatabaseManager is a layer of abstraction that sits on top of the SQLite and QueryHistory classes exposing their functionality through instances of each, respectively.
-- The only model class to be imported and used by other classes is DatabaseManager.
-
 ## Getting Started
 
 To test SQLite UI locally, follow these steps:
@@ -42,7 +40,7 @@ To test SQLite UI locally, follow these steps:
 
 ## Walkthrough
 
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/Ron_kGmS3Go/0.jpg)](http://www.youtube.com/watch?v=Ron_kGmS3Go 'SQLite UI')
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/X7hLOfgtfNg/0.jpg)](http://www.youtube.com/watch?v=X7hLOfgtfNg "SQLite UI")
 
 ## Liscense
 
