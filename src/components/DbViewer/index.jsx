@@ -1,4 +1,3 @@
-import { Component } from "react";
 import { toast } from "react-hot-toast";
 import { SQLTables } from "./SQLTables";
 import { Editor } from "./Editor";
@@ -8,34 +7,30 @@ import { PreviousQueries } from "./PreviousQueries";
 import { isEmpty } from "../../utils/common";
 import { DatabaseManager } from "../../models/DatabaseManager";
 import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
 
-export class DbViewer extends Component {
-  constructor(props) {
-    super(props);
+export const DbViewer = ({ files }) => {
+  const fileName = files[0].name;
+  const dm = DatabaseManager(fileName);
 
-    const fileName = props.files[0].name;
+  const db = dm.database();
+  const queryHistory = dm.queryHistory();
 
-    this.dm = DatabaseManager(fileName);
+  const [tables, setTables] = useState([]);
+  const [queryResult, setQueryResult] = useState([]);
+  const [query, setQuery] = useState("");
+  const [selectedQuery, setSelectedQuery] = useState("");
+  const [selectedLineText, setSelectedLineText] = useState("");
+  const [selectedTable, setSelectedTable] = useState("");
+  const [queryError, setQueryError] = useState("");
+  const [queryMessage, setQueryMessage] = useState("");
+  const [loadingResult, setLoadingResult] = useState(false);
+  const [queryHistoryState, setQueryHistoryState] = useState(
+    queryHistory.getHistory()
+  );
 
-    this.db = this.dm.database();
-    this.queryHistory = this.dm.queryHistory();
-
-    this.state = {
-      tables: [],
-      queryResult: [],
-      query: "",
-      selectedQuery: "",
-      selectedLineText: "",
-      selectedTable: "",
-      queryError: "",
-      queryMessage: "",
-      loadingResult: false,
-      queryHistory: this.queryHistory.getHistory(),
-    };
-  }
-
-  componentDidMount() {
-    const tables = this.db.getAllTableNames();
+  useEffect(() => {
+    const tables = db.getAllTableNames();
     const selectedTable = tables.length ? tables[0] : "";
 
     if (!selectedTable) {
@@ -43,199 +38,143 @@ export class DbViewer extends Component {
     }
 
     const initialQuery = `SELECT * FROM ${selectedTable} LIMIT 10;`;
-    this.setState({ tables, selectedTable, query: initialQuery });
-    this.peekTable(selectedTable);
-  }
+    setTables(tables);
+    setSelectedTable(selectedTable);
+    setQuery(initialQuery);
+    peekTable(selectedTable);
+  }, []);
 
-  peekTable = (selectedTable) => {
-    const result = this.db.peekTable(selectedTable);
-    this.setQueryResult(result);
+  const peekTable = (selectedTable) => {
+    const result = db.peekTable(selectedTable);
+    setQueryResultHandler(result);
   };
 
-  setQueryResultWrapperAndShowToast = (result) => {
-    this.setQueryResult(result);
+  const setQueryResultHandler = (result) => {
+    const { message: queryMessage = "", data = [], error = "" } = result;
 
-    const { data = [] } = result;
-
-    if (data.length && data[0].values.length > 50) {
-      toast.error(
-        "This query returned more than 50 rows. Consider adding a limit."
-      );
+    if (error.trim().length) {
+      setQueryResult([]);
+      setQueryError(error);
+      setLoadingResult(false);
+      setQueryMessage(queryMessage);
+      return;
     }
+
+    if (isEmpty(data) && queryMessage !== "select") {
+      let newTables = [];
+      if (queryMessage.includes("created table")) {
+        newTables = db.getAllTableNames();
+      }
+
+      setTables(newTables.length ? newTables : tables);
+      setLoadingResult(false);
+      setQueryMessage(queryMessage);
+      return;
+    }
+
+    if (isEmpty(data)) {
+      setQueryResult([]);
+      setLoadingResult(false);
+      setQueryMessage(queryMessage);
+      return;
+    }
+
+    setQueryResult(data);
+    setLoadingResult(false);
+    setQueryMessage(queryMessage);
   };
 
-  executeQuery = () => {
-    this.setState({ loadingResult: true, queryError: "" });
-
-    const { query, selectedQuery, selectedLineText } = this.state;
+  const executeQuery = () => {
+    setLoadingResult(true);
+    setQueryError("");
 
     const isThereAnyLineText = selectedLineText.trim().length > 0;
 
     if (isThereAnyLineText) {
-      const result = this.db.runQuery(selectedLineText);
+      const result = db.runQuery(selectedLineText);
       if (!result.error) {
-        this.addToQueryHistory(selectedLineText);
-        this.setQueryResultWrapperAndShowToast(result);
+        addToQueryHistory(selectedLineText);
+        setQueryResultHandler(result);
         return;
       }
     }
 
     const isAnyTextSelected = selectedQuery.trim().length > 0;
-    this.addToQueryHistory(isAnyTextSelected ? selectedQuery : query);
-    const result = this.db.runQuery(isAnyTextSelected ? selectedQuery : query);
+    addToQueryHistory(isAnyTextSelected ? selectedQuery : query);
+    const result = db.runQuery(isAnyTextSelected ? selectedQuery : query);
 
-    this.setQueryResultWrapperAndShowToast(result);
+    setQueryResultHandler(result);
   };
 
-  setQuery = (query) => {
-    this.setState({
-      query,
-      selectedTable: "",
-    });
-
-    toast.dismiss();
+  const addToQueryHistory = (query) => {
+    queryHistory.addQuery(query);
+    setQueryHistoryState(queryHistory.getHistory());
   };
 
-  setQueryResult = (queryResult) => {
-    const { message: queryMessage = "", data = [], error = "" } = queryResult;
-
-    const commonState = {
-      loadingResult: false,
-      queryMessage,
-    };
-
-    if (error.trim().length) {
-      this.setState({
-        ...commonState,
-        queryResult: [],
-        queryError: error,
-      });
-
-      return;
-    }
-
-    if (isEmpty(data) && queryMessage !== "select") {
-      const { tables: oldTables } = this.state;
-      let newTables = [];
-      if (queryMessage.includes("created table")) {
-        newTables = this.db.getAllTableNames();
-      }
-
-      this.setState({
-        ...commonState,
-        tables: newTables.length ? newTables : oldTables,
-      });
-
-      return;
-    }
-
-    if (isEmpty(data)) {
-      this.setState({ ...commonState, queryResult: [] });
-      return;
-    }
-
-    this.setState({
-      ...commonState,
-      queryResult: data,
-    });
-  };
-
-  setSelectedTable = (selectedTable) => {
-    const { query } = this.state;
-    const updatedQuery = `\nSELECT * FROM ${selectedTable} LIMIT 10;`;
-    this.setState({ selectedTable, query: query + updatedQuery });
-  };
-
-  setSelectedQuery = (selectedQuery) => {
-    this.setState({ selectedQuery });
-  };
-
-  setSelectedLine = (selectedLineText) => {
-    this.setState({ selectedLineText });
-  };
-
-  addToQueryHistory = (query) => {
-    this.queryHistory.addQuery(query);
-    this.setState({ queryHistory: this.queryHistory.getHistory() });
-  };
-
-  persistHistory = () => {
-    this.queryHistory.persistHistory();
+  const persistHistory = () => {
+    queryHistory.persistHistory();
     toast.success("Query history persisted to local storage");
   };
 
-  clearHistory = () => {
-    this.queryHistory.clearHistory();
-    this.setState({ queryHistory: this.queryHistory.getHistory() });
+  const clearHistory = () => {
+    queryHistory.clearHistory();
+    setQueryHistoryState(queryHistory.getHistory());
     toast.success("Query history cleared and persisted storage was purged");
   };
 
-  deleteQueryFromHistory = (query) => {
-    this.queryHistory.deleteQuery(query);
-    this.setState({ queryHistory: this.queryHistory.getHistory() });
+  const deleteQueryFromHistory = (query) => {
+    queryHistory.deleteQuery(query);
+    setQueryHistoryState(queryHistory.getHistory());
   };
 
-  render() {
-    const {
-      tables,
-      query,
-      queryResult,
-      loadingResult,
-      selectedTable,
-      queryError,
-      queryMessage,
-      queryHistory,
-    } = this.state;
-    return (
-      <div className="d-flex flex-column flex-lg-row p-1 mt-5">
-        <div className="col-lg-auto bg-light rounded-2 mb-3 mb-lg-0 overflow-auto">
-          <PreviousQueries
-            queryHistory={queryHistory}
-            setQuery={this.setQuery}
-            query={query}
-            persistHistory={this.persistHistory}
-            clearHistory={this.clearHistory}
-            deleteQueryFromHistory={this.deleteQueryFromHistory}
-          />
-        </div>
-        <div className="flex-grow-1 overflow-auto">
-          <div className="container-fluid">
-            <div className="row">
-              <SQLTables
-                tables={tables}
-                selectedTable={selectedTable}
-                setSelectedTable={this.setSelectedTable}
+  return (
+    <div className="d-flex flex-column flex-lg-row p-1 mt-5">
+      <div className="col-lg-auto bg-light rounded-2 mb-3 mb-lg-0 overflow-auto">
+        <PreviousQueries
+          queryHistory={queryHistoryState}
+          setQuery={setQuery}
+          query={query}
+          persistHistory={persistHistory}
+          clearHistory={clearHistory}
+          deleteQueryFromHistory={deleteQueryFromHistory}
+        />
+      </div>
+      <div className="flex-grow-1 overflow-auto">
+        <div className="container-fluid">
+          <div className="row">
+            <SQLTables
+              tables={tables}
+              selectedTable={selectedTable}
+              setSelectedTable={setSelectedTable}
+            />
+          </div>
+          <div className="row my-4">
+            <div className="col-md-6">
+              <Editor
+                query={query}
+                setQuery={setQuery}
+                executeQuery={executeQuery}
+                setSelectedQuery={setSelectedQuery}
+                setSelectedLine={setSelectedLineText}
               />
             </div>
-            <div className="row my-4">
-              <div className="col-md-6">
-                <Editor
-                  query={query}
-                  setQuery={this.setQuery}
-                  executeQuery={this.executeQuery}
-                  setSelectedQuery={this.setSelectedQuery}
-                  setSelectedLine={this.setSelectedLine}
+            <div className="col-md-6">
+              {queryError ? (
+                <QueryError error={queryError} />
+              ) : (
+                <QueryResult
+                  loadingResult={loadingResult}
+                  queryResult={queryResult}
+                  queryMessage={queryMessage}
                 />
-              </div>
-              <div className="col-md-6">
-                {queryError ? (
-                  <QueryError error={queryError} />
-                ) : (
-                  <QueryResult
-                    loadingResult={loadingResult}
-                    queryResult={queryResult}
-                    setQueryResult={this.setQueryResult}
-                    queryMessage={queryMessage}
-                  />
-                )}
-              </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 DbViewer.propTypes = {
   files: PropTypes.array.isRequired,
