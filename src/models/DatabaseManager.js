@@ -1,13 +1,21 @@
 import { QueryHistory } from "./QueryHistory";
-import { SQLite } from "./SQLite";
+import { getSQLiteInstance } from "./SQLite";
 
 export const DatabaseManager = (fileName) => {
-  const db = SQLite.getInstance();
+  const db = getSQLiteInstance();
   const qh = QueryHistory(fileName);
+
+  const getDb = async () => {
+    await db.initializeSqlJs();
+    return db;
+  };
 
   const self = {
     queryHistory: () => qh,
-    database: () => db,
+    database: () => {
+      getDb();
+      return db;
+    },
   };
 
   return self;
