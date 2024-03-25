@@ -1,49 +1,56 @@
-import { isEmpty } from '../utils/common';
+import { isEmpty } from "../utils/common";
 
-export class QueryHistory {
-  constructor(dbName) {
-    this.queryHistory = [];
-    this.dbName = dbName;
-    this.loadHistory();
-  }
+export const QueryHistory = (dbName) => {
+  let queryHistory = [];
+  loadHistory();
 
-  addQuery(query) {
+  function addQuery(query) {
     if (!query) return;
-    this.queryHistory.push(query);
+    queryHistory.push(query);
   }
 
-  getHistory() {
-    return [...new Set(this.queryHistory)] ?? [];
+  function getHistory() {
+    return [...new Set(queryHistory)] ?? [];
   }
 
-  deleteQuery(query) {
-    this.queryHistory = this.queryHistory.filter(q => q !== query);
+  function deleteQuery(query) {
+    queryHistory = queryHistory.filter((q) => q !== query);
   }
 
-  clearHistory() {
-    this.queryHistory = [];
-    this.persistHistory();
+  function clearHistory() {
+    queryHistory = [];
+    persistHistory();
   }
 
-  persistHistory() {
-    const localStorageKey = `queryHistory-${this.dbName}`;
+  function persistHistory() {
+    const localStorageKey = `queryHistory-${dbName}`;
     const localStorageObject = {};
-    localStorageObject[localStorageKey] = this.queryHistory;
+    localStorageObject[localStorageKey] = queryHistory;
 
     localStorage.setItem(localStorageKey, JSON.stringify(localStorageObject));
   }
 
-  loadHistory() {
-    const localStorageKey = `queryHistory-${this.dbName}`;
+  function loadHistory() {
+    const localStorageKey = `queryHistory-${dbName}`;
     let localStorageObject = null;
     try {
       localStorageObject = JSON.parse(localStorage.getItem(localStorageKey));
     } catch (error) {
-      console.error('Error retrieving stored queries', error);
+      console.error("Error retrieving stored queries", error);
     }
 
     if (!!localStorageObject && !isEmpty(localStorageObject)) {
-      this.queryHistory = localStorageObject[localStorageKey];
+      queryHistory = localStorageObject[localStorageKey];
     }
   }
-}
+
+  const self = {
+    addQuery,
+    getHistory,
+    deleteQuery,
+    clearHistory,
+    persistHistory,
+  };
+
+  return self;
+};
