@@ -1,13 +1,13 @@
-import { Component } from 'react';
-import { toast } from 'react-hot-toast';
-import { SQLTables } from './SQLTables';
-import { Editor } from './Editor';
-import { QueryResult } from './QueryResult';
-import { QueryError } from './QueryError';
-import { PreviousQueries } from './PreviousQueries';
-import { isEmpty } from '../../utils/common';
-import { DatabaseManager } from '../../models/DatabaseManager';
-import PropTypes from 'prop-types';
+import { Component } from "react";
+import { toast } from "react-hot-toast";
+import { SQLTables } from "./SQLTables";
+import { Editor } from "./Editor";
+import { QueryResult } from "./QueryResult";
+import { QueryError } from "./QueryError";
+import { PreviousQueries } from "./PreviousQueries";
+import { isEmpty } from "../../utils/common";
+import { DatabaseManager } from "../../models/DatabaseManager";
+import PropTypes from "prop-types";
 
 export class DbViewer extends Component {
   constructor(props) {
@@ -15,7 +15,7 @@ export class DbViewer extends Component {
 
     const fileName = props.files[0].name;
 
-    this.dm = DatabaseManager.getInstance(fileName);
+    this.dm = DatabaseManager(fileName);
 
     this.db = this.dm.database();
     this.queryHistory = this.dm.queryHistory();
@@ -23,20 +23,20 @@ export class DbViewer extends Component {
     this.state = {
       tables: [],
       queryResult: [],
-      query: '',
-      selectedQuery: '',
-      selectedLineText: '',
-      selectedTable: '',
-      queryError: '',
-      queryMessage: '',
+      query: "",
+      selectedQuery: "",
+      selectedLineText: "",
+      selectedTable: "",
+      queryError: "",
+      queryMessage: "",
       loadingResult: false,
-      queryHistory: this.queryHistory.getHistory()
+      queryHistory: this.queryHistory.getHistory(),
     };
   }
 
   componentDidMount() {
     const tables = this.db.getAllTableNames();
-    const selectedTable = tables.length ? tables[0] : '';
+    const selectedTable = tables.length ? tables[0] : "";
 
     if (!selectedTable) {
       return;
@@ -47,25 +47,25 @@ export class DbViewer extends Component {
     this.peekTable(selectedTable);
   }
 
-  peekTable = selectedTable => {
+  peekTable = (selectedTable) => {
     const result = this.db.peekTable(selectedTable);
     this.setQueryResult(result);
   };
 
-  setQueryResultWrapperAndShowToast = result => {
+  setQueryResultWrapperAndShowToast = (result) => {
     this.setQueryResult(result);
 
     const { data = [] } = result;
 
     if (data.length && data[0].values.length > 50) {
       toast.error(
-        'This query returned more than 50 rows. Consider adding a limit.'
+        "This query returned more than 50 rows. Consider adding a limit."
       );
     }
   };
 
   executeQuery = () => {
-    this.setState({ loadingResult: true, queryError: '' });
+    this.setState({ loadingResult: true, queryError: "" });
 
     const { query, selectedQuery, selectedLineText } = this.state;
 
@@ -87,43 +87,43 @@ export class DbViewer extends Component {
     this.setQueryResultWrapperAndShowToast(result);
   };
 
-  setQuery = query => {
+  setQuery = (query) => {
     this.setState({
       query,
-      selectedTable: ''
+      selectedTable: "",
     });
 
     toast.dismiss();
   };
 
-  setQueryResult = queryResult => {
-    const { message: queryMessage = '', data = [], error = '' } = queryResult;
+  setQueryResult = (queryResult) => {
+    const { message: queryMessage = "", data = [], error = "" } = queryResult;
 
     const commonState = {
       loadingResult: false,
-      queryMessage
+      queryMessage,
     };
 
     if (error.trim().length) {
       this.setState({
         ...commonState,
         queryResult: [],
-        queryError: error
+        queryError: error,
       });
 
       return;
     }
 
-    if (isEmpty(data) && queryMessage !== 'select') {
+    if (isEmpty(data) && queryMessage !== "select") {
       const { tables: oldTables } = this.state;
       let newTables = [];
-      if (queryMessage.includes('created table')) {
+      if (queryMessage.includes("created table")) {
         newTables = this.db.getAllTableNames();
       }
 
       this.setState({
         ...commonState,
-        tables: newTables.length ? newTables : oldTables
+        tables: newTables.length ? newTables : oldTables,
       });
 
       return;
@@ -136,41 +136,41 @@ export class DbViewer extends Component {
 
     this.setState({
       ...commonState,
-      queryResult: data
+      queryResult: data,
     });
   };
 
-  setSelectedTable = selectedTable => {
+  setSelectedTable = (selectedTable) => {
     const { query } = this.state;
     const updatedQuery = `\nSELECT * FROM ${selectedTable} LIMIT 10;`;
     this.setState({ selectedTable, query: query + updatedQuery });
   };
 
-  setSelectedQuery = selectedQuery => {
+  setSelectedQuery = (selectedQuery) => {
     this.setState({ selectedQuery });
   };
 
-  setSelectedLine = selectedLineText => {
+  setSelectedLine = (selectedLineText) => {
     this.setState({ selectedLineText });
   };
 
-  addToQueryHistory = query => {
+  addToQueryHistory = (query) => {
     this.queryHistory.addQuery(query);
     this.setState({ queryHistory: this.queryHistory.getHistory() });
   };
 
   persistHistory = () => {
     this.queryHistory.persistHistory();
-    toast.success('Query history persisted to local storage');
+    toast.success("Query history persisted to local storage");
   };
 
   clearHistory = () => {
     this.queryHistory.clearHistory();
     this.setState({ queryHistory: this.queryHistory.getHistory() });
-    toast.success('Query history cleared and persisted storage was purged');
+    toast.success("Query history cleared and persisted storage was purged");
   };
 
-  deleteQueryFromHistory = query => {
+  deleteQueryFromHistory = (query) => {
     this.queryHistory.deleteQuery(query);
     this.setState({ queryHistory: this.queryHistory.getHistory() });
   };
@@ -184,7 +184,7 @@ export class DbViewer extends Component {
       selectedTable,
       queryError,
       queryMessage,
-      queryHistory
+      queryHistory,
     } = this.state;
     return (
       <div className="d-flex flex-column flex-lg-row p-1 mt-5">
@@ -238,5 +238,5 @@ export class DbViewer extends Component {
 }
 
 DbViewer.propTypes = {
-  files: PropTypes.array.isRequired
+  files: PropTypes.array.isRequired,
 };

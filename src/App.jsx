@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
-import { Toaster } from 'react-hot-toast';
-import { FileUpload } from './components/FileUpload';
-import { DbViewer } from './components/DbViewer';
-import { Tips } from './components/Tips';
-import { DatabaseManager } from './models/DatabaseManager';
+import { useState, useCallback } from "react";
+import { Toaster } from "react-hot-toast";
+import { FileUpload } from "./components/FileUpload";
+import { DbViewer } from "./components/DbViewer";
+import { Tips } from "./components/Tips";
+import { DatabaseManager } from "./models/DatabaseManager";
 
 const App = () => {
   const [files, setFiles] = useState([]);
@@ -11,7 +11,7 @@ const App = () => {
 
   const onDrop = useCallback(async (files) => {
     const fileName = files[0].name;
-    const dm = DatabaseManager.getInstance(fileName);
+    const dm = DatabaseManager(fileName);
     const loaded = await dm.database().loadDbFromFile(files);
 
     if (loaded) {
@@ -24,12 +24,12 @@ const App = () => {
   }, []);
 
   const loadSampleDb = useCallback(async () => {
-    const fileName = 'sample.db';
-    const dm = DatabaseManager.getInstance(fileName);
-    const loaded = await dm.database().loadDbFromUrl('/sample.db');
+    const fileName = "sample.db";
+    const dm = DatabaseManager(fileName);
+    const loaded = await dm.database().loadDbFromUrl("/sample.db");
 
     if (loaded) {
-      setFiles([{ name: 'sample.db' }]);
+      setFiles([{ name: "sample.db" }]);
       setDbLoaded(loaded);
     } else {
       //retrying

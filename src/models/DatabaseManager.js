@@ -1,27 +1,15 @@
 import { QueryHistory } from './QueryHistory';
 import { SQLite } from './SQLite';
 
-export class DatabaseManager {
-  static instance;
+export const DatabaseManager = (fileName) => {
+  const db = SQLite.getInstance();
+  const qh = new QueryHistory(fileName);
 
-  constructor(fileName) {
-    this.db = SQLite.getInstance();
-    this.qh = new QueryHistory(fileName);
+  const self = {
+    queryHistory: () => qh,
+    database: () => db,
   }
 
-  static getInstance(fileName) {
-    if (!DatabaseManager.instance) {
-      DatabaseManager.instance = new DatabaseManager(fileName);
-    }
-
-    return DatabaseManager.instance;
-  }
-
-  queryHistory() {
-    return this.qh;
-  }
-
-  database() {
-    return this.db;
-  }
+  return self;
 }
+
