@@ -7,12 +7,14 @@ Docs : https://docs.cypress.io/guides/core-concepts/interacting-with-elements#Fo
 */
 
 describe("SQLite UI", () => {
+  const urlToVisit = "https://sqlite-ui.netlify.app";
+
   beforeEach(() => {
-    cy.visit("http://localhost:5173");
+    cy.visit(urlToVisit);
   });
 
   it("the local application correctly loads", () => {
-    cy.visit("http://localhost:5173");
+    cy.visit(urlToVisit);
   });
 
   describe("User Flow 1 - Viewing tips and tricks", () => {
@@ -402,7 +404,7 @@ describe("SQLite UI", () => {
 
       cy.getAllLocalStorage().then((result) => {
         expect(result).to.deep.equal({
-          "http://localhost:5173": {
+          [urlToVisit]: {
             "queryHistory-sample.db": '["SELECT * FROM playlists LIMIT 1;"]',
           },
         });
