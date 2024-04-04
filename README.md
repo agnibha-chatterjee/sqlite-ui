@@ -10,6 +10,18 @@ Many portions of the app were re-written to follow a more functional style of pr
 
 ## E2E Tests
 
+To run tests locally, follow these steps:
+
+- Clone the repository to your local machine.
+  `git clone https://github.com/agnibha-chatterjee/sqlite-ui.git`
+- Install the required dependencies.
+  `npm install`
+- Start the application server.
+  `npm run cypress:open`
+- Select E2E tests on Cypress
+- Select E2E Testing in Electron
+- Select the `sqlite-ui.cy.js` file
+
 ### User Flow 1 - Viewing tips and tricks
 
 This set of tests checks the functionality related to the display and interaction with the tips and tricks modal.
