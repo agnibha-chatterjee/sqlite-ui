@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 export const QueryError = ({ error }) => {
   return (
-    <div>
+    <div data-cy="query-error">
       <h5 className="my-2">Error</h5>
       <div style={{ height: 600 }}>
         <div className="alert alert-danger">
@@ -15,5 +15,5 @@ export const QueryError = ({ error }) => {
 };
 
 QueryError.propTypes = {
-  error: PropTypes.string.isRequired
+  error: PropTypes.string.isRequired,
 };

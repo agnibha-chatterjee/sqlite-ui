@@ -18,17 +18,26 @@ export const PreviousQueries = ({
         <h5 className="my-2">History</h5>
         <div>
           <button
+            data-cy="persist-history"
             className="btn btn-secondary btn-sm mx-2"
             onClick={persistHistory}
           >
             Persist History
           </button>
-          <button className="btn btn-danger btn-sm" onClick={clearHistory}>
+          <button
+            data-cy="clear-history"
+            className="btn btn-danger btn-sm"
+            onClick={clearHistory}
+          >
             Clear History
           </button>
         </div>
       </div>
-      <div className="overflow-scroll" style={{ height: 700 }}>
+      <div
+        className="overflow-scroll"
+        style={{ height: 700 }}
+        data-cy="previous-queries-container"
+      >
         {queryHistory.map((query) => (
           <PreviousQueryItem
             key={query}

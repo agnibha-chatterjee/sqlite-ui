@@ -1,6 +1,11 @@
 export const Tips = () => {
   return (
-    <div id="tips-modal" className="modal overflow-hidden" tabIndex="-1">
+    <div
+      id="tips-modal"
+      className="modal overflow-hidden"
+      tabIndex="-1"
+      data-cy="tips-modal"
+    >
       <div className="modal-dialog modal-xl">
         <div className="modal-content">
           <div className="modal-header">
@@ -10,6 +15,7 @@ export const Tips = () => {
               className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
+              data-cy="close-tips"
             ></button>
           </div>
           <div className="modal-body">
@@ -38,7 +44,7 @@ export const Tips = () => {
               <li>
                 <div>
                   <p>
-                    Placing your cursor at the end of a line and pressing the{' '}
+                    Placing your cursor at the end of a line and pressing the{" "}
                     {' "Run" '} button to run that line as a query.
                   </p>
                   <p>

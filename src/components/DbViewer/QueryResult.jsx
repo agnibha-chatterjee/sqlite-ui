@@ -1,25 +1,24 @@
-import { TableVirtuoso } from 'react-virtuoso';
-import PropTypes from 'prop-types';
-import { transformQueryResult } from '../../utils/transform';
+import { TableVirtuoso } from "react-virtuoso";
+import PropTypes from "prop-types";
+import { transformQueryResult } from "../../utils/transform";
 
 export const QueryResult = ({ queryResult, loadingResult, queryMessage }) => {
-  const res = queryResult.length
-    ? queryResult[0]
-    : { columns: [], values: [] };
+  const res = queryResult.length ? queryResult[0] : { columns: [], values: [] };
 
   return (
     <div>
       <h5 className="my-2">Result</h5>
-      <div style={{ overflow: 'scroll', height: 600 }}>
+      <div style={{ overflow: "scroll", height: 600 }}>
         {loadingResult ? (
           <div>Fetching results...</div>
         ) : (
           <>
-            {queryMessage === 'select' ? (
+            {queryMessage === "select" ? (
               <>
                 {queryResult.length ? (
                   <div className="table-responsive">
                     <TableVirtuoso
+                      data-cy="query-result"
                       style={{ height: 600 }}
                       data={transformQueryResult(res)}
                       totalCount={res.values.length}
@@ -31,21 +30,24 @@ export const QueryResult = ({ queryResult, loadingResult, queryMessage }) => {
                               {children}
                             </table>
                           );
-                        }
+                        },
                       }}
                       fixedHeaderContent={() => (
                         <tr>
-                          {res.columns.map(col => (
-                            <th key={col + Math.random()}>{col}</th>
+                          {res.columns.map((col) => (
+                            <th
+                              key={col + Math.random()}
+                              data-cy={`result-header-${col}`}
+                            >
+                              {col}
+                            </th>
                           ))}
                         </tr>
                       )}
                       itemContent={(index, data) => (
                         <>
-                          {res.columns.map(col => (
-                            <td key={data[col] + Math.random()}>
-                              {data[col]}
-                            </td>
+                          {res.columns.map((col) => (
+                            <td key={data[col] + Math.random()}>{data[col]}</td>
                           ))}
                         </>
                       )}
@@ -70,6 +72,5 @@ export const QueryResult = ({ queryResult, loadingResult, queryMessage }) => {
 QueryResult.propTypes = {
   queryResult: PropTypes.array.isRequired,
   loadingResult: PropTypes.bool.isRequired,
-  queryMessage: PropTypes.string.isRequired
+  queryMessage: PropTypes.string.isRequired,
 };
-

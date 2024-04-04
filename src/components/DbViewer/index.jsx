@@ -46,9 +46,6 @@ export const DbViewer = ({ files, databaseManager }) => {
   const [queryHistory, setQueryHistory] = useState(getParsedLocalHistory());
   const initialRender = useRef(0);
 
-  console.log("Line", selectedLineText);
-  console.log("selected", selectedQuery);
-
   useEffect(() => {
     if (!isEmpty(db)) {
       setIsLoaded(true);
@@ -136,10 +133,10 @@ export const DbViewer = ({ files, databaseManager }) => {
     }
 
     const isAnyTextSelected = selectedQuery.trim().length > 0;
-    addToQueryHistory(isAnyTextSelected ? selectedQuery : query);
-    console.log(db);
     const result = db.runQuery(isAnyTextSelected ? selectedQuery : query);
-    console.log(result);
+    if (!result.error) {
+      addToQueryHistory(isAnyTextSelected ? selectedQuery : query);
+    }
     setQueryResultHandler(result);
   };
 
@@ -171,7 +168,10 @@ export const DbViewer = ({ files, databaseManager }) => {
   };
 
   return loaded ? (
-    <div className="d-flex flex-column flex-lg-row p-1 mt-5">
+    <div
+      className="d-flex flex-column flex-lg-row p-1 mt-5"
+      data-cy="db-viewer"
+    >
       <div className="col-lg-auto bg-light rounded-2 mb-3 mb-lg-0 overflow-auto">
         <PreviousQueries
           queryHistory={queryHistory}

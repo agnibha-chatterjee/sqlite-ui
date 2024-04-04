@@ -7,7 +7,7 @@ export const SQLTables = ({
   initialRender,
 }) => {
   return (
-    <div>
+    <div data-cy="database-tables">
       <h5 className="my-2">Database Tables ({tables.length} in total)</h5>
       <div className="dropdown">
         <button
@@ -15,6 +15,7 @@ export const SQLTables = ({
           className="btn btn-outline-dark dropdown-toggle w-100"
           data-bs-toggle="dropdown"
           aria-expanded="false"
+          data-cy="table-dropdown-btn"
         >
           Selected table: {selectedTable}
         </button>

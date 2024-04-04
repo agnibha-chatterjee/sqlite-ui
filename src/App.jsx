@@ -54,13 +54,16 @@ const App = () => {
     <div className="py-5">
       <Toaster />
       <div className="container">
-        <h1 className="display-5 fw-bold">SQLite UI</h1>
+        <h1 className="display-5 fw-bold" data-cy="banner">
+          SQLite UI
+        </h1>
         <p className="col-12 fs-4">A DB viewer for SQLite databases.</p>
         <button
           type="button"
           className="btn btn-link"
           data-bs-toggle="modal"
           data-bs-target="#tips-modal"
+          data-cy="show-tips"
         >
           Some helpful tips (recommended if {"you're"} new to SQLite UI)
         </button>
@@ -73,6 +76,7 @@ const App = () => {
             <button
               className="btn btn-link text-center w-100"
               onClick={loadSampleDb}
+              data-cy="load-sample-db"
             >
               Or test the app with a sample sqlite db
             </button>

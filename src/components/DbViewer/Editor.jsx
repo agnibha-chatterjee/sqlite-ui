@@ -38,7 +38,7 @@ export const Editor = ({
   };
 
   return (
-    <div style={{ height: "100%" }}>
+    <div style={{ height: "100%" }} data-cy="query-editor">
       <div className="d-flex justify-content-between">
         <h5 className="my-2">Editor</h5>
         <Toolbar

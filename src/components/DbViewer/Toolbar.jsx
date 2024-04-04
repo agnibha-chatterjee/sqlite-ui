@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 export const Toolbar = ({
   executeQuery,
@@ -6,7 +6,7 @@ export const Toolbar = ({
   setFontSize,
   setWordWrap,
   wordWrap,
-  fontSize
+  fontSize,
 }) => {
   const fontSizes = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
 
@@ -19,8 +19,8 @@ export const Toolbar = ({
             type="checkbox"
             role="switch"
             id="word-wrap"
-            checked={wordWrap === 'on'}
-            onChange={() => setWordWrap(wordWrap === 'on' ? 'off' : 'on')}
+            checked={wordWrap === "on"}
+            onChange={() => setWordWrap(wordWrap === "on" ? "off" : "on")}
           />
           <label className="form-check-label" htmlFor="word-wrap">
             Word Wrap
@@ -38,7 +38,7 @@ export const Toolbar = ({
           Font size: {fontSize}
         </button>
         <ul className="dropdown-menu">
-          {fontSizes.map(size => (
+          {fontSizes.map((size) => (
             <li key={size} onClick={() => setFontSize(size)}>
               <span className="dropdown-item">{size}</span>
             </li>
@@ -50,7 +50,8 @@ export const Toolbar = ({
         <button
           type="button"
           className="btn btn-danger btn-sm mx-1"
-          onClick={() => setQuery('')}
+          data-cy="clear-query"
+          onClick={() => setQuery("")}
         >
           Clear
         </button>
@@ -58,6 +59,7 @@ export const Toolbar = ({
         <button
           type="button"
           className="btn btn-success btn-sm mx-1"
+          data-cy="run-query"
           onClick={executeQuery}
         >
           Run
@@ -73,6 +75,5 @@ Toolbar.propTypes = {
   setQuery: PropTypes.func.isRequired,
   executeQuery: PropTypes.func.isRequired,
   setFontSize: PropTypes.func.isRequired,
-  setWordWrap: PropTypes.func.isRequired
+  setWordWrap: PropTypes.func.isRequired,
 };
-
