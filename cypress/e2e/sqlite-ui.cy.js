@@ -181,28 +181,28 @@ describe("SQLite UI", () => {
       const queryResult = cy.get('[data-cy="query-result"]');
       queryResult.should("exist");
     });
-  });
 
-  it("executes a query and displays the result", () => {
-    const sampleDbBtn = cy.get('[data-cy="load-sample-db"]');
-    sampleDbBtn.click();
+    it("executes a query and displays the result", () => {
+      const sampleDbBtn = cy.get('[data-cy="load-sample-db"]');
+      sampleDbBtn.click();
 
-    const queryEditor = cy.get('[data-cy="query-editor"] textarea');
+      const queryEditor = cy.get('[data-cy="query-editor"] textarea');
 
-    // Clearing input first
-    queryEditor.clear({ force: true });
+      // Clearing input first
+      queryEditor.clear({ force: true });
 
-    // Typing in a custom query
-    queryEditor.type("SELECT * FROM playlists limit 1;", { force: true });
-    const runQueryBtn = cy.get('[data-cy="run-query"]');
+      // Typing in a custom query
+      queryEditor.type("SELECT * FROM playlists limit 1;", { force: true });
+      const runQueryBtn = cy.get('[data-cy="run-query"]');
 
-    runQueryBtn.click({ force: true });
+      runQueryBtn.click({ force: true });
 
-    // The result display with have two columns PlaylistId and Name
-    const queryResultCol1 = cy.get('[data-cy="result-header-PlaylistId"]');
-    const queryResultCol2 = cy.get('[data-cy="result-header-Name"]');
-    queryResultCol1.should("exist");
-    queryResultCol2.should("exist");
+      // The result display with have two columns PlaylistId and Name
+      const queryResultCol1 = cy.get('[data-cy="result-header-PlaylistId"]');
+      const queryResultCol2 = cy.get('[data-cy="result-header-Name"]');
+      queryResultCol1.should("exist");
+      queryResultCol2.should("exist");
+    });
   });
 
   describe("User Flow 5 - Executing incorrect custom queries works as intended (i.e. the query error component is rendered)", () => {

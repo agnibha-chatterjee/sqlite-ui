@@ -6,7 +6,7 @@ A simple GUI tool for SQLite databases.
 
 Many portions of the app were re-written to follow a more functional style of programming, the app now uses functional React components instead of class-based components.
 
-**New**: Added a bunch of E2E tests
+**New (04/03/2024)**: Added a bunch of E2E tests
 
 ## E2E Tests
 
@@ -114,6 +114,10 @@ To test SQLite UI locally, follow these steps:
 ## Walkthrough
 
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/X7hLOfgtfNg/0.jpg)](http://www.youtube.com/watch?v=X7hLOfgtfNg "SQLite UI")
+
+## Testing Walkthrough
+
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/MKy6PytuYjI/0.jpg)](http://www.youtube.com/watch?v=MKy6PytuYjI "SQLite UI Testing")
 
 ## Liscense
 
