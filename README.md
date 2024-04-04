@@ -6,11 +6,13 @@ A simple GUI tool for SQLite databases.
 
 Many portions of the app were re-written to follow a more functional style of programming, the app now uses functional React components instead of class-based components.
 
+**New**: Added a bunch of E2E tests
+
 ## E2E Tests
 
 ### User Flow 1 - Viewing tips and tricks
 
-This test suite checks the functionality related to the display and interaction with the tips and tricks modal.
+This set of tests checks the functionality related to the display and interaction with the tips and tricks modal.
 
 - **renders the banner**: Checks if the banner with the text "SQLite UI" is rendered correctly.
 - **renders the button to show some helpful tips**: Verifies that the button to show tips is rendered and contains the correct text.
@@ -20,7 +22,7 @@ This test suite checks the functionality related to the display and interaction 
 
 ### User Flow 2 - Loading the sample db
 
-This test suite verifies the functionality related to loading a sample database.
+This set of tests verifies the functionality related to loading a sample database.
 
 - **renders the file drop off component**: Checks if the file upload component is rendered correctly.
 - **renders the load a sample db text correctly**: Ensures that the text for loading a sample database is rendered correctly.
@@ -28,7 +30,7 @@ This test suite verifies the functionality related to loading a sample database.
 
 ### User Flow 3 - Selecting different tables in the database
 
-This test suite checks the functionality related to selecting different tables in the loaded database.
+This set of tests checks the functionality related to selecting different tables in the loaded database.
 
 - **renders the sample database along with the database tables component**: Ensures that the database viewer and tables component are rendered correctly after loading the sample database.
 - **clicking the selected table dropdown shows the list of database tables**: Checks if the dropdown menu shows the list of tables when clicked.
@@ -37,28 +39,28 @@ This test suite checks the functionality related to selecting different tables i
 
 ### User Flow 4 - Executing correct custom queries works as intended
 
-This test suite checks the functionality related to executing custom queries and displaying their results.
+This set of tests checks the functionality related to executing custom queries and displaying their results.
 
 - **renders the query editor and the query result**: Ensures that the query editor and the query result components are rendered correctly.
 - **executes a query and displays the result**: Verifies that a custom query can be executed and its result is displayed correctly.
 
 ### User Flow 5 - Executing incorrect custom queries works as intended (i.e. the query error component is rendered)
 
-This test suite verifies the functionality related to executing incorrect custom queries and displaying error messages.
+This set of tests verifies the functionality related to executing incorrect custom queries and displaying error messages.
 
 - **executing a query on a table that does not exist displays an error**: Checks if an error is displayed when a query is executed on a non-existent table.
 - **executing a query on a table that does not exist displays the correct error message**: Ensures that the correct error message is displayed when a query is executed on a non-existent table.
 
 ### User Flow 6 - Query history updates as expected
 
-This test suite checks the functionality related to updating the query history.
+This set of tests checks the functionality related to updating the query history.
 
 - **executing a valid query adds it to the query history**: Verifies that a valid query is added to the query history.
 - **executing an invalid query does not add it to the query history**: Ensures that an invalid query is not added to the query history.
 
 ### User Flow 7 - Persisting and clearing query history works as expected
 
-This test suite verifies the functionality related to persisting and clearing the query history.
+This set of tests verifies the functionality related to persisting and clearing the query history.
 
 - **persisting query history survives a page refresh**: Checks if the persisted query history is retained after a page refresh.
 - **persisting query history adds correct local storage entry**: Ensures that the correct entry is added to the local storage when the query history is persisted.
