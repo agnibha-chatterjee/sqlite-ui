@@ -111,14 +111,6 @@ To test SQLite UI locally, follow these steps:
 - Access the application through your web browser at the specified address.
   `http://localhost:5173`
 
-## Walkthrough
-
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/X7hLOfgtfNg/0.jpg)](http://www.youtube.com/watch?v=X7hLOfgtfNg "SQLite UI")
-
-## Testing Walkthrough
-
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/MKy6PytuYjI/0.jpg)](http://www.youtube.com/watch?v=MKy6PytuYjI "SQLite UI Testing")
-
 ## Liscense
 
 This project is licensed under the MIT License - see the LICENSE file for details.
